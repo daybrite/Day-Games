@@ -1,5 +1,6 @@
 //! Pipes: rotate a scrambled network, lock settled tiles, and connect every branch.
-use day_fluent::tr;
+day_fluent::locales!();
+
 use day_pieces::prelude::*;
 use gamekit::chrome::{self, Feedback, Help, Sfx, cues, sfx};
 use serde::{Deserialize, Serialize};
@@ -192,22 +193,28 @@ impl Ui {
             .iter()
             .enumerate()
             .filter(|(_, bit)| g.tiles[i] & **bit != 0)
-            .map(|(d, _)| tr(["pp_north", "pp_east", "pp_south", "pp_west"][d]).format())
+            .map(|(d, _)| {
+                [
+                    crate::res::str::north,
+                    crate::res::str::east,
+                    crate::res::str::south,
+                    crate::res::str::west,
+                ][d]()
+                .format()
+            })
             .collect();
-        tr("pp_selection")
-            .arg("row", (i / g.size + 1) as f64)
-            .arg("column", (i % g.size + 1) as f64)
-            .arg("ports", directions.join(", "))
-            .arg(
-                "state",
-                tr(if g.locked[i] {
-                    "pp_locked"
-                } else {
-                    "pp_unlocked"
-                })
-                .format(),
-            )
-            .format()
+        crate::res::str::selection(
+            (i % g.size + 1) as f64,
+            directions.join(", "),
+            (i / g.size + 1) as f64,
+            (if g.locked[i] {
+                crate::res::str::locked()
+            } else {
+                crate::res::str::unlocked()
+            })
+            .format(),
+        )
+        .format()
     }
 }
 
@@ -262,12 +269,12 @@ pub fn pipes_page() -> AnyPiece {
         ui.push(Overlay::Help);
     }
     let (p, m, c, s, l) = (ui.clone(), ui.clone(), ui.clone(), ui.clone(), ui.clone());
-    let header = chrome::game_header(tr("nav_pipes"), "pp-pause", move || p.pause());
+    let header = chrome::game_header(crate::res::str::game_title(), "pp-pause", move || p.pause());
     let stats = chrome::info_row(vec![
         // Wide enough for the counters these two reach, so a growing number never shifts the
         // row under the header.
         chrome::info_stat(
-            tr("pp_moves"),
+            crate::res::str::moves(),
             move || {
                 m.repaint.track();
                 m.game.borrow().moves.to_string()
@@ -278,7 +285,7 @@ pub fn pipes_page() -> AnyPiece {
         .min_width(96.0)
         .any(),
         chrome::info_stat(
-            tr("pp_connected"),
+            crate::res::str::connected(),
             move || {
                 c.repaint.track();
                 let net = c.network.borrow();
@@ -291,7 +298,7 @@ pub fn pipes_page() -> AnyPiece {
         .any(),
     ]);
     let controls = row((
-        label(tr("pp_lock_mode")).color(chrome::TEXT),
+        label(crate::res::str::lock_mode()).color(chrome::TEXT),
         toggle(ui.lock_mode).id("pp-lock-mode"),
     ))
     .spacing(10.0)
@@ -301,10 +308,10 @@ pub fn pipes_page() -> AnyPiece {
         stats,
         label(move || {
             s.repaint.track();
-            tr(if s.network.borrow().solved() {
-                "pp_solved"
+            (if s.network.borrow().solved() {
+                crate::res::str::solved()
             } else {
-                "pp_goal"
+                crate::res::str::goal()
             })
             .format()
         })
@@ -381,7 +388,7 @@ fn board_canvas(ui: Rc<Ui>) -> AnyPiece {
     })
     .on_key(move |event| k.key(&event.key))
     .focused(ui.focus)
-    .a11y(|a| a.label(tr("pp_board_a11y").format()))
+    .a11y(|a| a.label(crate::res::str::board_a11y().format()))
     .id("pp-board")
     .grow()
     .any()
@@ -549,12 +556,12 @@ fn overlays(ui: Rc<Ui>) -> AnyPiece {
 fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
     if kind == Overlay::Help {
         return chrome::instructions_card(
-            tr("nav_pipes"),
+            crate::res::str::game_title(),
             vec![
-                Help::Para(tr("pp_help_goal")),
-                Help::Para(tr("pp_help_controls")),
-                Help::Para(tr("pp_help_locks")),
-                Help::Para(tr("pp_help_keys")),
+                Help::Para(crate::res::str::help_goal()),
+                Help::Para(crate::res::str::help_controls()),
+                Help::Para(crate::res::str::help_locks()),
+                Help::Para(crate::res::str::help_keys()),
             ],
             "pp-help-done",
             move || ui.pop(),
@@ -563,47 +570,51 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
         .any();
     }
     let mut items = Vec::new();
-    let action = |key: &'static str, id: &'static str, tint: Color, overlay: Overlay| {
-        let u = ui.clone();
-        chrome::menu_button(tr(key), tint, id, move || u.push(overlay))
-    };
+    let action =
+        |title: day_fluent::LocalizedText, id: &'static str, tint: Color, overlay: Overlay| {
+            let u = ui.clone();
+            chrome::menu_button(title, tint, id, move || u.push(overlay))
+        };
     match kind {
         Overlay::Pause => {
-            items.push(chrome::card_title(tr("gk_paused"), Color::WHITE));
+            items.push(chrome::card_title(
+                gamekit::res::str::paused(),
+                Color::WHITE,
+            ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_resume"),
+                gamekit::res::str::resume(),
                 chrome::GREEN,
                 "pp-resume",
                 move || u.show(Overlay::None),
             ));
             items.push(action(
-                "gk_new_game",
+                gamekit::res::str::new_game(),
                 "pp-new-game",
                 chrome::BLUE,
                 Overlay::NewGame,
             ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("pp_restart"),
+                crate::res::str::restart(),
                 chrome::AMBER,
                 "pp-restart",
                 move || u.restart(),
             ));
             items.push(action(
-                "gk_settings",
+                gamekit::res::str::settings(),
                 "pp-settings",
                 chrome::SLATE,
                 Overlay::Settings,
             ));
             items.push(action(
-                "gk_instructions",
+                gamekit::res::str::instructions(),
                 "pp-instructions",
                 chrome::INDIGO,
                 Overlay::Help,
             ));
             items.push(chrome::menu_button(
-                tr("gk_quit"),
+                gamekit::res::str::quit(),
                 chrome::RED,
                 "pp-quit",
                 || {
@@ -612,14 +623,17 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
             ));
         }
         Overlay::NewGame => {
-            items.push(chrome::card_title(tr("gk_new_game"), Color::WHITE));
-            items.push(label(tr("pp_size")).color(chrome::TEXT).any());
+            items.push(chrome::card_title(
+                gamekit::res::str::new_game(),
+                Color::WHITE,
+            ));
+            items.push(label(crate::res::str::size()).color(chrome::TEXT).any());
             items.push(
                 picker(
                     vec![
-                        tr("pp_small").format(),
-                        tr("pp_medium").format(),
-                        tr("pp_large").format(),
+                        crate::res::str::small().format(),
+                        crate::res::str::medium().format(),
+                        crate::res::str::large().format(),
                     ],
                     ui.size_choice,
                 )
@@ -629,63 +643,66 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
             );
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("pp_start"),
+                crate::res::str::start(),
                 chrome::GREEN,
                 "pp-start",
                 move || u.start(),
             ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_cancel"),
+                gamekit::res::str::cancel(),
                 chrome::SLATE,
                 "pp-cancel",
                 move || u.pop(),
             ));
         }
         Overlay::Settings => {
-            items.push(chrome::card_title(tr("gk_settings"), Color::WHITE));
+            items.push(chrome::card_title(
+                gamekit::res::str::settings(),
+                Color::WHITE,
+            ));
             items.push(chrome::setting_row(
-                tr("gk_sounds"),
+                gamekit::res::str::sounds(),
                 toggle(ui.sounds).id("pp-sounds").any(),
             ));
             items.push(chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("pp-vibrations").any(),
             ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_done"),
+                gamekit::res::chrome::str::done(),
                 chrome::GREEN,
                 "pp-done",
                 move || u.pop(),
             ));
         }
         Overlay::Result => {
-            items.push(chrome::card_title(tr("pp_solved"), chrome::GOLD));
+            items.push(chrome::card_title(crate::res::str::solved(), chrome::GOLD));
             let g = ui.game.borrow();
             let index = SIZES.iter().position(|&n| n == g.size).unwrap();
             items.push(chrome::stat(
-                tr("pp_moves"),
+                crate::res::str::moves(),
                 g.moves.to_string(),
                 Font::Title2,
                 Color::WHITE,
                 "pp-final-moves",
             ));
             items.push(chrome::stat(
-                tr("pp_best"),
+                crate::res::str::best(),
                 ui.records.borrow().best[index].map_or_else(|| "—".into(), |m| m.to_string()),
                 Font::Title2,
                 WATER,
                 "pp-best",
             ));
             items.push(action(
-                "gk_new_game",
+                gamekit::res::str::new_game(),
                 "pp-play-again",
                 chrome::GREEN,
                 Overlay::NewGame,
             ));
             items.push(chrome::menu_button(
-                tr("gk_quit"),
+                gamekit::res::str::quit(),
                 chrome::SLATE,
                 "pp-result-quit",
                 || {

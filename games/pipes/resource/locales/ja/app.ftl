@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = パイプ
+moves = 回転数
+connected = 接続済み
+goal = すべてのパイプを金色の水源につなぎましょう。
+solved = すべて接続！
+lock_mode = ロックモード
+locked = ロック中
+unlocked = ロック解除
+north = 上
+east = 右
+south = 下
+west = 左
+selection = { $row } 行 { $column } 列：{ $ports }。{ $state }。
+board_a11y = パイプの盤面。矢印で選択、Enterで回転、Lでロック切り替え。
+size = 盤面サイズ
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = パズル開始
+restart = パズルをやり直す
+best = 最少回転数 · このサイズ
+help_goal = タイルを回し、すべてのパイプを中央の金色の水源へつなぎます。接続部分は青緑に光ります。管の端は必ず別の管につなぎ、盤外に向けてはいけません。
+help_controls = タップで時計回りに90度回転。端、曲管、直管、分岐で一つの網を作ります。すべて解けるパズルです。完成すると光の波が広がります。
+help_locks = ロックモードをオンにしてタップすると固定や解除ができます。鍵の付いたタイルは回りません。オフにすると通常操作に戻ります。やり直すと初期配置になり、固定と回転数がリセットされます。
+help_keys = 矢印で選択、SpaceかEnterで回転、Lで固定、PかEscapeで一時停止。離れると保存します。新しいゲームでは5 × 5、7 × 7、9 × 9を選べます。

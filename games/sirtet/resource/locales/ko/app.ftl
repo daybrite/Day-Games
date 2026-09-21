@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = 레벨
+lines = 줄
+next = 다음
+next_a11y = 다음 블록
+game_over = 게임 오버
+clear_single = 한 줄
+clear_double = 두 줄
+clear_triple = 세 줄
+clear_sirtet = SIRTET!
+help_intro = 떨어지는 블록을 쌓아 가로줄을 채우세요. 화면이 가득 차면 안 됩니다.
+help_play = 게임 방법
+help_play_1 = • **좌우로 드래그**하거나 방향키로 블록을 움직이세요.
+help_play_2 = • **탭**하여 블록을 회전하세요.
+help_play_3 = • **아래로 드래그**하면 더 빨리 떨어집니다.
+help_lines = 줄 없애기
+help_lines_1 = • 가로 한 줄을 모두 채우면 사라집니다.
+help_lines_2 = • **여러 줄을 한꺼번에** 없애면 추가 점수를 얻습니다. 네 줄이 가장 큰 보상입니다.
+help_levels = 레벨과 속도
+help_levels_1 = 줄을 없앨수록 레벨이 올라가고 블록이 빨라집니다.
+help_over_1 = 새 블록이 들어올 수 없으면 게임이 끝납니다.

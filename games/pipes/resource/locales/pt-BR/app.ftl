@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Canos
+moves = Rotações
+connected = Conectados
+goal = Conecte todos os canos à fonte dourada.
+solved = Tudo conectado!
+lock_mode = Modo trava
+locked = Travado
+unlocked = Destravado
+north = cima
+east = direita
+south = baixo
+west = esquerda
+selection = Linha { $row }, coluna { $column }: { $ports }. { $state }.
+board_a11y = Tabuleiro de Canos. Setas selecionam, Enter gira e L trava ou destrava.
+size = Tamanho do tabuleiro
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Iniciar quebra-cabeça
+restart = Reiniciar quebra-cabeça
+best = Menos rotações · este tamanho
+help_goal = Gire as peças para ligar todos os canos à fonte dourada central. Canos conectados brilham em turquesa. Todas as pontas devem encontrar outro cano; nenhuma pode sair do tabuleiro.
+help_controls = Toque para girar 90° no sentido horário. Pontas, curvas, retas e ramificações formam uma só rede. Todo quebra-cabeça tem solução. Uma onda de luz celebra a conexão completa.
+help_locks = Ative o modo trava e toque para travar ou liberar peças. O cadeado impede a rotação. Desative para continuar girando. Reiniciar restaura a mistura inicial e zera travas e contador.
+help_keys = Use setas para selecionar, Espaço ou Enter para girar, L para travar e P ou Escape para pausar. O progresso é salvo ao sair. Nova partida oferece 5 × 5, 7 × 7 ou 9 × 9.

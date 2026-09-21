@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = Livello
+lines = Linee
+next = Prossimo
+next_a11y = Prossimo pezzo
+game_over = Partita finita
+clear_single = SINGOLA
+clear_double = DOPPIA
+clear_triple = TRIPLA
+clear_sirtet = SIRTET!
+help_intro = Impila i pezzi e completa le righe prima che il campo si riempia.
+help_play = Come giocare
+help_play_1 = • **Trascina a sinistra o destra** per muovere il pezzo, oppure usa i tasti freccia.
+help_play_2 = • **Tocca** per ruotare il pezzo.
+help_play_3 = • **Trascina verso il basso** per accelerare la caduta.
+help_lines = Eliminare righe
+help_lines_1 = • Completa una riga orizzontale per eliminarla.
+help_lines_2 = • Eliminare **più righe insieme** dà punti extra. Quattro righe danno il premio maggiore.
+help_levels = Livelli e velocità
+help_levels_1 = Eliminando righe aumentano il livello e la velocità di caduta.
+help_over_1 = La partita finisce quando un nuovo pezzo non può più entrare.

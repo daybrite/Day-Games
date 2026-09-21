@@ -6,12 +6,13 @@
 //! the other players when the phone is held sideways under a rotation lock. The decks are the word
 //! lists under words/, one folder per language (words/README.md).
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::f64::consts::PI;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
-use day_fluent::tr;
 use day_geometry::Affine;
 use day_part_haptics::Haptic;
 use day_part_sensors::SensorKind;
@@ -512,14 +513,14 @@ fn deck_screen(ui: Rc<Ui>) -> AnyPiece {
     let (iu, su) = (ui.clone(), ui.clone());
     // Nothing to pause while a deck is being chosen, so the header keeps the pause button's room
     // and the title lands where it does on the round screen.
-    let header = chrome::game_header_plain(tr("nav_charades"));
+    let header = chrome::game_header_plain(crate::res::str::game_title());
     let tools = row((
-        button(tr("gk_instructions"))
+        button(gamekit::res::str::instructions())
             .bordered()
             .tint(Color::WHITE)
             .action(move || iu.push(Overlay::Instructions))
             .id("ch-instructions"),
-        button(tr("gk_settings"))
+        button(gamekit::res::str::settings())
             .bordered()
             .tint(Color::WHITE)
             .action(move || su.push(Overlay::Settings))
@@ -532,7 +533,7 @@ fn deck_screen(ui: Rc<Ui>) -> AnyPiece {
         header,
         scroll(
             column((
-                label(tr("ch_pick_deck")).color(chrome::TEXT),
+                label(crate::res::str::pick_deck()).color(chrome::TEXT),
                 tools,
                 row(PieceVec(tiles))
                     .spacing(12.0)
@@ -559,9 +560,7 @@ fn deck_tile(ui: Rc<Ui>, deck: &Deck) -> AnyPiece {
     let id = deck.id;
     let color = deck_color(id);
     let best = ui.records.borrow().best(id);
-    let meta = tr("ch_deck_meta")
-        .arg("count", deck.words.len() as f64)
-        .arg("best", f64::from(best));
+    let meta = crate::res::str::deck_meta(f64::from(best), deck.words.len() as f64);
     let a11y = deck.title.clone();
     column((
         label(deck.title.clone())
@@ -612,7 +611,7 @@ fn game_screen(ui: Rc<Ui>) -> AnyPiece {
                 .as_ref()
                 .and_then(|r| r.current().map(str::to_string))
                 .unwrap_or_default();
-            a.label(tr("ch_card_a11y").arg("word", word).format())
+            a.label(crate::res::str::card_a11y(word).format())
         }
     })
     .id("ch-canvas")
@@ -627,12 +626,12 @@ fn game_screen(ui: Rc<Ui>) -> AnyPiece {
             move || {
                 let (s, b) = (s.clone(), b.clone());
                 row((
-                    button(tr("ch_back"))
+                    button(crate::res::str::back())
                         .bordered()
                         .tint(Color::WHITE)
                         .action(move || b.to_decks())
                         .id("ch-back"),
-                    button(tr("ch_start"))
+                    button(crate::res::str::start())
                         .prominent()
                         .tint(GREEN)
                         .action(move || s.begin_countdown())
@@ -650,13 +649,13 @@ fn game_screen(ui: Rc<Ui>) -> AnyPiece {
             move || {
                 let (p, k) = (p.clone(), k.clone());
                 row((
-                    button(tr("ch_pass"))
+                    button(crate::res::str::pass())
                         .prominent()
                         .tint(ORANGE)
                         .action(move || p.answer(Mark::Pass))
                         .id("ch-pass")
                         .grow_w(),
-                    button(tr("ch_correct"))
+                    button(crate::res::str::correct())
                         .prominent()
                         .tint(GREEN)
                         .action(move || k.answer(Mark::Correct))
@@ -669,7 +668,9 @@ fn game_screen(ui: Rc<Ui>) -> AnyPiece {
         )
     };
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_charades"), "ch-pause", move || pu.pause());
+    let header = chrome::game_header(crate::res::str::game_title(), "ch-pause", move || {
+        pu.pause()
+    });
     // Under the card: whichever of the two button rows this phase shows.
     let footer = column((ready, answers))
         .spacing(12.0)
@@ -895,18 +896,18 @@ fn draw_round(ui: &Ui, d: &mut Draw, sz: Size) {
                 dim,
                 FontWeight::Semibold,
             );
-            let head = tr("ch_ready_title").format();
+            let head = crate::res::str::ready_title().format();
             let (lines, size) = fit_word(&head, w * 0.86, 44.0);
             for (i, line) in lines.iter().enumerate() {
                 let y = h * 0.38 + i as f64 * size * 1.1;
                 centered(d, line, at(w / 2.0, y), size, white, FontWeight::Black);
             }
             let hint = if ui.tilting.get_untracked() {
-                tr("ch_ready_tilt").format()
+                crate::res::str::ready_tilt().format()
             } else if ui.tilt_on.get_untracked() && ui.tilt_available {
-                tr("ch_no_motion").format()
+                crate::res::str::no_motion().format()
             } else {
-                tr("ch_ready_buttons").format()
+                crate::res::str::ready_buttons().format()
             };
             let (lines, size) = fit_word(&hint, w * 0.86, 20.0);
             for (i, line) in lines.iter().enumerate() {
@@ -922,7 +923,7 @@ fn draw_round(ui: &Ui, d: &mut Draw, sz: Size) {
             let size = h.min(w) * (0.42 + 0.12 * frac);
             centered(
                 d,
-                &tr("ch_get_ready").format(),
+                &crate::res::str::get_ready().format(),
                 at(w / 2.0, h * 0.18),
                 24.0,
                 dim,
@@ -942,8 +943,8 @@ fn draw_round(ui: &Ui, d: &mut Draw, sz: Size) {
             let Some(round) = round.as_ref() else { return };
             if let Some(mark) = flash {
                 let banner = match mark {
-                    Mark::Correct => tr("ch_correct_banner").format(),
-                    Mark::Pass => tr("ch_pass_banner").format(),
+                    Mark::Correct => crate::res::str::correct_banner().format(),
+                    Mark::Pass => crate::res::str::pass_banner().format(),
                 };
                 let (_, size) = fit_word(&banner, w * 0.8, h * 0.3);
                 centered(
@@ -991,7 +992,7 @@ fn draw_round(ui: &Ui, d: &mut Draw, sz: Size) {
             if ui.tilting.get_untracked() {
                 centered(
                     d,
-                    &tr("ch_tilt_hint").format(),
+                    &crate::res::str::tilt_hint().format(),
                     at(w / 2.0, h * 0.9),
                     15.0,
                     dim,
@@ -1006,9 +1007,9 @@ fn draw_round(ui: &Ui, d: &mut Draw, sz: Size) {
                 .as_ref()
                 .is_some_and(|r| r.remaining() > 0.0);
             let text = if out_of_cards {
-                tr("ch_out_of_cards").format()
+                crate::res::str::out_of_cards().format()
             } else {
-                tr("ch_time_up").format()
+                crate::res::str::time_up().format()
             };
             let (_, size) = fit_word(&text, w * 0.85, h * 0.3);
             centered(
@@ -1072,7 +1073,7 @@ fn results_screen(ui: Rc<Ui>) -> AnyPiece {
             move || u.new_best.get()
         },
         || {
-            label(tr("ch_new_best"))
+            label(crate::res::str::new_best())
                 .font(Font::Headline)
                 .color(chrome::GOLD)
         },
@@ -1088,7 +1089,7 @@ fn results_screen(ui: Rc<Ui>) -> AnyPiece {
         column((
             label(title).font(Font::Headline).color(chrome::TEXT_DIM),
             chrome::stat(
-                tr("ch_correct"),
+                crate::res::str::correct(),
                 score.to_string(),
                 Font::LargeTitle,
                 chrome::GOLD,
@@ -1096,10 +1097,18 @@ fn results_screen(ui: Rc<Ui>) -> AnyPiece {
             ),
             best,
             list,
-            chrome::menu_button(tr("ch_play_again"), GREEN, "ch-again", move || au.start(id)),
-            chrome::menu_button(tr("ch_decks"), chrome::BLUE, "ch-to-decks", move || {
-                du.to_decks()
-            }),
+            chrome::menu_button(
+                crate::res::str::play_again(),
+                GREEN,
+                "ch-again",
+                move || au.start(id),
+            ),
+            chrome::menu_button(
+                crate::res::str::decks(),
+                chrome::BLUE,
+                "ch-to-decks",
+                move || du.to_decks(),
+            ),
         ))
         .spacing(14.0)
         .align(HAlign::Center),
@@ -1141,12 +1150,15 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "ch-resume", move || {
-                u1.show(Overlay::None)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("ch_end_round"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "ch-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                crate::res::str::end_round(),
                 chrome::AMBER,
                 "ch-end-round",
                 move || {
@@ -1159,18 +1171,18 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
                 },
             ),
             chrome::menu_button(
-                tr("gk_settings"),
+                gamekit::res::str::settings(),
                 chrome::SLATE,
                 "ch-pause-settings",
                 move || u3.push(Overlay::Settings),
             ),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "ch-pause-instructions",
                 move || u4.push(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "ch-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "ch-quit", || {
                 nav_back();
             }),
         ))
@@ -1184,25 +1196,25 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
 fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let lengths: Vec<String> = LENGTHS
         .iter()
-        .map(|s| tr("ch_seconds").arg("n", f64::from(*s)).format())
+        .map(|s| crate::res::str::seconds(f64::from(*s)).format())
         .collect();
     let played: u32 = ui.records.borrow().played.values().sum();
     let tilt_detail = if ui.tilt_available {
-        tr("ch_tilt_detail")
+        crate::res::str::tilt_detail()
     } else {
-        tr("ch_tilt_missing")
+        crate::res::str::tilt_missing()
     };
     let reset = {
         let u = ui.clone();
-        button(tr("ch_reset_records"))
+        button(crate::res::str::reset_records())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("ch_reset_records_title"))
-                        .message(tr("ch_reset_records_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(crate::res::str::reset_records_title())
+                        .message(crate::res::str::reset_records_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1217,25 +1229,28 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_charades")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("ch-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("ch-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("ch-vibrations").any(),
             ),
             chrome::setting_row(
-                tr("ch_round_length"),
+                crate::res::str::round_length(),
                 picker(lengths, ui.length)
                     .menu()
                     .id("ch-round-length")
                     .any(),
             ),
             chrome::setting_row(
-                tr("ch_tilt"),
+                crate::res::str::tilt(),
                 toggle(ui.tilt_on)
                     .enabled(ui.tilt_available)
                     .id("ch-tilt")
@@ -1245,9 +1260,9 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
                 .font(Font::Caption)
                 .color(chrome::TEXT_DIM)
                 .width(300.0),
-            chrome::section_heading(tr("ch_records")),
+            chrome::section_heading(crate::res::str::records()),
             chrome::setting_row(
-                tr("ch_rounds_played"),
+                crate::res::str::rounds_played(),
                 label(played.to_string())
                     .tabular()
                     .color(chrome::TEXT_DIM)
@@ -1255,7 +1270,7 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
                     .any(),
             ),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.pop())
                 .id("ch-done"),
@@ -1269,16 +1284,16 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
 
 fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     chrome::instructions_card(
-        tr("nav_charades"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("ch_help_intro")),
-            Help::Heading(tr("ch_help_play")),
-            Help::Para(tr("ch_help_play_1")),
-            Help::Para(tr("ch_help_play_2")),
-            Help::Para(tr("ch_help_play_3")),
-            Help::Para(tr("ch_help_play_4")),
-            Help::Heading(tr("ch_help_buttons")),
-            Help::Para(tr("ch_help_buttons_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Para(crate::res::str::help_play_4()),
+            Help::Heading(crate::res::str::help_buttons()),
+            Help::Para(crate::res::str::help_buttons_1()),
         ],
         "ch-help-done",
         move || ui.pop(),
@@ -1327,7 +1342,7 @@ pub fn charades_preview() -> AnyPiece {
             );
             centered(
                 d,
-                "Giraffe",
+                &crate::res::str::preview_word().format(),
                 Point::new(c.x, c.y),
                 ph * 0.30,
                 Color::WHITE,

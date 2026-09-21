@@ -96,6 +96,10 @@ pub fn resolve_locale(wanted: &str) -> &'static str {
             return l;
         }
     }
+    // The UI also serves Apple's/browser Chinese tags from its zh-CN catalog.
+    if language.eq_ignore_ascii_case("zh") {
+        return "zh-CN";
+    }
     FALLBACK
 }
 
@@ -604,6 +608,11 @@ mod tests {
         assert_eq!(resolve_locale("en_US"), "en");
         assert_eq!(resolve_locale("xx-YY"), FALLBACK);
         assert_eq!(resolve_locale("en-u-co-phonebk"), "en");
+        assert_eq!(resolve_locale("fr-CA"), "fr");
+        assert_eq!(resolve_locale("pt_BR"), "pt-BR");
+        assert_eq!(resolve_locale("zh-CN"), "zh-CN");
+        assert_eq!(resolve_locale("zh-Hans-CN"), "zh-CN");
+        assert_eq!(resolve_locale("zh-Hans"), "zh-CN");
     }
 
     #[test]

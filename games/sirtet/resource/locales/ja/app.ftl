@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = レベル
+lines = ライン
+next = 次
+next_a11y = 次のブロック
+game_over = ゲームオーバー
+clear_single = シングル
+clear_double = ダブル
+clear_triple = トリプル
+clear_sirtet = SIRTET！
+help_intro = 落ちてくるブロックを積み、画面が埋まる前に横一列をそろえましょう。
+help_play = 遊び方
+help_play_1 = • **左右にドラッグ**するか、キーボードの矢印キーで移動します。
+help_play_2 = • **タップ**でブロックを回転します。
+help_play_3 = • **下へドラッグ**すると速く落下します。
+help_lines = ラインを消す
+help_lines_1 = • 横一列を埋めると消えます。
+help_lines_2 = • **複数のラインを同時に消す**とボーナス。4列同時が最高得点です。
+help_levels = レベルと速さ
+help_levels_1 = ラインを消すとレベルが上がり、落下が速くなります。
+help_over_1 = 新しいブロックが入らなくなると終了です。

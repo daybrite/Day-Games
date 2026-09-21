@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = ПАУЗА
+resume = Продолжить
+new_game = Новая игра
+settings = Настройки
+instructions = Инструкции
+quit = Выйти из игры
+play_again = Играть снова
+game_over = ИГРА ОКОНЧЕНА
+score = Счёт
+best = Рекорд
+new_high_score = Новый рекорд!
+sounds = Звуки
+vibrations = Вибрация
+data = Данные
+cancel = Отмена
+reset_high_score = Сбросить рекорд
+reset_high_score_title = Сбросить рекорд?
+reset_high_score_message = Рекорд будет навсегда сброшен до нуля.
+reset_confirm = Сбросить
+game_over_heading = Игра окончена

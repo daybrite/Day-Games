@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = Stufe
+lines = Reihen
+next = Nächste
+next_a11y = Nächster Stein
+game_over = Spiel vorbei
+clear_single = EINFACH
+clear_double = DOPPELT
+clear_triple = DREIFACH
+clear_sirtet = SIRTET!
+help_intro = Stapele fallende Steine und fülle Reihen, bevor das Spielfeld voll ist.
+help_play = Spielanleitung
+help_play_1 = • **Ziehe nach links oder rechts**, um den Stein zu bewegen, oder nutze die Pfeiltasten.
+help_play_2 = • **Tippe**, um den Stein zu drehen.
+help_play_3 = • **Ziehe nach unten**, damit der Stein schneller fällt.
+help_lines = Reihen entfernen
+help_lines_1 = • Fülle eine waagerechte Reihe, um sie zu entfernen.
+help_lines_2 = • **Mehrere Reihen gleichzeitig** bringen Extrapunkte. Vier Reihen sind am wertvollsten.
+help_levels = Level und Tempo
+help_levels_1 = Mit entfernten Reihen steigen Level und Fallgeschwindigkeit.
+help_over_1 = Das Spiel endet, wenn kein neuer Stein mehr ins Feld passt.

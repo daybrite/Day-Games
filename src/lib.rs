@@ -16,11 +16,23 @@ include!(concat!(env!("OUT_DIR"), "/app_title.rs"));
 // Entry point for the mobile, macOS, and web hosts; a desktop binary enters through src/main.rs.
 day::day_start!(options: window(), root);
 
+// Apple and browsers can request zh-Hans or zh-Hans-CN while the store catalog uses
+// zh-CN. Day falls back to the language subtag, so share that catalog under zh too.
+// Keep one translation source and one store listing for Simplified Chinese.
+static APP_LOCALES: std::sync::LazyLock<Vec<(&'static str, &'static str)>> =
+    std::sync::LazyLock::new(|| {
+        let mut catalogs = res::locales::CATALOG.to_vec();
+        if let Some((_, source)) = catalogs.iter().find(|(tag, _)| *tag == "zh-CN") {
+            catalogs.push(("zh", *source));
+        }
+        catalogs
+    });
+
 /// Options for every window. The locale catalog and title go to `launch`, which installs them
 /// (https://daybrite.dev/docs/localization).
 pub fn window() -> day::WindowOptions {
     day::WindowOptions {
-        locales: Some((res::locales::DEFAULT, res::locales::CATALOG)),
+        locales: Some((res::locales::DEFAULT, &APP_LOCALES)),
         title_fn: Some(|| res::str::app_title(APP_TITLE).format()),
         // Desktop only; phones fill the screen. Tall enough for the Sudoku board and keypad.
         size: day::prelude::Size::new(720.0, 780.0),
@@ -124,70 +136,70 @@ fn home_page(open: Signal<Option<Section>>) -> impl Piece {
                 tile(
                     open,
                     Section::Breakout,
-                    res::str::nav_breakout(),
+                    breakout::res::str::game_title(),
                     breakout::breakout_preview(),
                     "tile-breakout",
                 ),
                 tile(
                     open,
                     Section::Sirtet,
-                    res::str::nav_sirtet(),
+                    sirtet::res::str::game_title(),
                     sirtet::sirtet_preview(),
                     "tile-sirtet",
                 ),
                 tile(
                     open,
                     Section::Game2048,
-                    res::str::nav_2048(),
+                    twentyfortyeight::res::str::game_title(),
                     twentyfortyeight::twentyfortyeight_preview(),
                     "tile-twentyfortyeight",
                 ),
                 tile(
                     open,
                     Section::Sudoku,
-                    res::str::nav_sudoku(),
+                    sudoku::res::str::game_title(),
                     sudoku::sudoku_preview(),
                     "tile-sudoku",
                 ),
                 tile(
                     open,
                     Section::BlockBlast,
-                    res::str::nav_blockblast(),
+                    blockblast::res::str::game_title(),
                     blockblast::blockblast_preview(),
                     "tile-blockblast",
                 ),
                 tile(
                     open,
                     Section::Solitaire,
-                    res::str::nav_solitaire(),
+                    solitaire::res::str::game_title(),
                     solitaire::solitaire_preview(),
                     "tile-solitaire",
                 ),
                 tile(
                     open,
                     Section::Charades,
-                    res::str::nav_charades(),
+                    charades::res::str::game_title(),
                     charades::charades_preview(),
                     "tile-charades",
                 ),
                 tile(
                     open,
                     Section::Pipes,
-                    res::str::nav_pipes(),
+                    pipes::res::str::game_title(),
                     pipes::pipes_preview(),
                     "tile-pipes",
                 ),
                 tile(
                     open,
                     Section::Reversi,
-                    res::str::nav_reversi(),
+                    reversi::res::str::game_title(),
                     reversi::reversi_preview(),
                     "tile-reversi",
                 ),
                 tile(
                     open,
                     Section::Mines,
-                    res::str::nav_mines(),
+                    mines::res::str::game_title(),
                     mines::mines_preview(),
                     "tile-mines",
                 ),

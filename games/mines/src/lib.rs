@@ -8,11 +8,12 @@
 //! move a pointer, Space or Return uncovers, and F flags. The board turns with the window (tall on
 //! a phone, wide on a desktop) so its squares stay big enough to hit at any size.
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::f64::consts::TAU;
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_geometry::Affine;
 use day_part_haptics::Haptic;
 use day_pieces::prelude::*;
@@ -96,9 +97,9 @@ fn fmt_time(secs: f64) -> String {
 
 fn difficulty_label(d: Difficulty) -> day_fluent::LocalizedText {
     match d {
-        Difficulty::Easy => tr("mi_easy"),
-        Difficulty::Medium => tr("mi_medium"),
-        Difficulty::Hard => tr("mi_hard"),
+        Difficulty::Easy => crate::res::str::easy(),
+        Difficulty::Medium => crate::res::str::medium(),
+        Difficulty::Hard => crate::res::str::hard(),
     }
 }
 
@@ -664,7 +665,9 @@ pub fn mines_page() -> AnyPiece {
     };
     let pu = ui.clone();
     let content = chrome::game_frame(
-        chrome::game_header(tr("nav_mines"), "mi-pause", move || pu.pause()),
+        chrome::game_header(crate::res::str::game_title(), "mi-pause", move || {
+            pu.pause()
+        }),
         Some(info_bar(ui.clone())),
         board.any(),
         Some(flag_toggle(ui.clone())),
@@ -739,7 +742,7 @@ fn board_canvas(ui: Rc<Ui>) -> impl Piece {
     })
     .on_key(move |k| ku.key(&k.key))
     .focused(ui.focus)
-    .a11y(|a| a.label(tr("mi_board_a11y").format()))
+    .a11y(|a| a.label(crate::res::str::board_a11y().format()))
     .id("mi-board")
     .grow()
 }
@@ -1061,7 +1064,7 @@ fn draw_mine(d: &mut Draw, c: Point, cell: f64) {
 fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     let (mu, tu) = (ui.clone(), ui.clone());
     let mines = counter(
-        tr("mi_mines_left"),
+        crate::res::str::mines_left(),
         move || {
             mu.hud.track();
             mu.board.borrow().mines_left().to_string()
@@ -1070,7 +1073,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
         "mi-mines-left",
     );
     let time = counter(
-        tr("mi_time"),
+        crate::res::str::time(),
         move || {
             tu.hud.track();
             fmt_time(tu.board.borrow().elapsed)
@@ -1113,15 +1116,21 @@ fn flag_toggle(ui: Rc<Ui>) -> AnyPiece {
             fu.cue(&cues::TICK);
             fu.hud.notify();
         })
-        .a11y(|a| a.label(tr("mi_flag_mode_a11y").format()).role(Role::Button))
+        .a11y(|a| {
+            a.label(crate::res::str::flag_mode_a11y().format())
+                .role(Role::Button)
+        })
         .id("mi-flag-mode")
         .frame(44.0, 44.0)
     };
-    row((label(tr("mi_flag_mode")).color(chrome::TEXT), flag))
-        .spacing(10.0)
-        .align(VAlign::Center)
-        .padding(8.0)
-        .any()
+    row((
+        label(crate::res::str::flag_mode()).color(chrome::TEXT),
+        flag,
+    ))
+    .spacing(10.0)
+    .align(VAlign::Center)
+    .padding(8.0)
+    .any()
 }
 
 fn counter(
@@ -1185,23 +1194,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "mi-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "mi-new-game", move || {
-                u2.push(Overlay::Picker)
-            }),
-            chrome::menu_button(tr("gk_settings"), chrome::SLATE, "mi-settings", move || {
-                u3.push(Overlay::Settings)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "mi-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "mi-new-game",
+                move || u2.push(Overlay::Picker),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
+                chrome::SLATE,
+                "mi-settings",
+                move || u3.push(Overlay::Settings),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "mi-instructions",
                 move || u4.push(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "mi-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "mi-quit", || {
                 nav_back();
             }),
         ))
@@ -1243,12 +1261,11 @@ fn picker_card(ui: Rc<Ui>) -> AnyPiece {
                         .font(Font::Title3)
                         .bold()
                         .color(Color::WHITE),
-                    label(
-                        tr("mi_board_detail")
-                            .arg("cols", cols as f64)
-                            .arg("rows", board_rows as f64)
-                            .arg("mines", d.mines() as f64),
-                    )
+                    label(crate::res::str::board_detail(
+                        cols as f64,
+                        d.mines() as f64,
+                        board_rows as f64,
+                    ))
                     .font(Font::Caption)
                     .color(chrome::TEXT_DIM),
                 ))
@@ -1271,12 +1288,12 @@ fn picker_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            label(tr("mi_choose"))
+            label(crate::res::str::choose())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
             column(PieceVec(rows)).spacing(12.0),
-            button(tr("gk_cancel"))
+            button(gamekit::res::str::cancel())
                 .action(move || u.pop())
                 .id("mi-cancel"),
         ))
@@ -1294,16 +1311,16 @@ fn end_card(ui: Rc<Ui>, won: bool) -> AnyPiece {
     let best = ui.records.borrow().best[d.index()];
     let new_best = ui.new_best.get();
     let (again_label, again_id) = if won {
-        (tr("gk_play_again"), "mi-play-again")
+        (gamekit::res::str::play_again(), "mi-play-again")
     } else {
-        (tr("mi_try_again"), "mi-try-again")
+        (crate::res::str::try_again(), "mi-try-again")
     };
     let (au, nu) = (ui.clone(), ui.clone());
     let best_line = when(
         move || best.is_some(),
         move || {
             chrome::stat(
-                tr("mi_best_time"),
+                crate::res::str::best_time(),
                 best.map(fmt_time).unwrap_or_default(),
                 Font::Title3,
                 Color::WHITE,
@@ -1314,7 +1331,7 @@ fn end_card(ui: Rc<Ui>, won: bool) -> AnyPiece {
     let record = when(
         move || new_best,
         || {
-            label(tr("mi_new_best"))
+            label(crate::res::str::new_best())
                 .font(Font::Headline)
                 .bold()
                 .color(chrome::GOLD)
@@ -1323,14 +1340,18 @@ fn end_card(ui: Rc<Ui>, won: bool) -> AnyPiece {
     chrome::card(
         column((
             chrome::card_title(
-                if won { tr("mi_swept") } else { tr("mi_boom") },
+                if won {
+                    crate::res::str::swept()
+                } else {
+                    crate::res::str::boom()
+                },
                 if won { chrome::GOLD } else { FLAG_RED },
             ),
             label(difficulty_label(d))
                 .font(Font::Headline)
                 .color(chrome::TEXT_DIM),
             chrome::stat(
-                tr("mi_time"),
+                crate::res::str::time(),
                 fmt_time(secs),
                 Font::LargeTitle,
                 if won { chrome::GOLD } else { Color::WHITE },
@@ -1340,14 +1361,19 @@ fn end_card(ui: Rc<Ui>, won: bool) -> AnyPiece {
             record,
             chrome::menu_button(again_label, chrome::GREEN, again_id, move || au.new_game(d)),
             chrome::menu_button(
-                tr("gk_new_game"),
+                gamekit::res::str::new_game(),
                 chrome::BLUE,
                 "mi-end-new-game",
                 move || nu.push(Overlay::Picker),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "mi-end-quit", || {
-                nav_back();
-            }),
+            chrome::menu_button(
+                gamekit::res::str::quit(),
+                chrome::RED,
+                "mi-end-quit",
+                || {
+                    nav_back();
+                },
+            ),
         ))
         .spacing(12.0)
         .align(HAlign::Center),
@@ -1372,11 +1398,10 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
         row((
             column((
                 label(difficulty_label(d)).color(chrome::TEXT),
-                label(
-                    tr("mi_record_line")
-                        .arg("won", f64::from(records.won[i]))
-                        .arg("played", f64::from(records.played[i])),
-                )
+                label(crate::res::str::record_line(
+                    f64::from(records.played[i]),
+                    f64::from(records.won[i]),
+                ))
                 .font(Font::Caption)
                 .color(chrome::TEXT_DIM),
             ))
@@ -1391,15 +1416,15 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     };
     let reset = {
         let u = ui.clone();
-        button(tr("mi_reset_records"))
+        button(crate::res::str::reset_records())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("mi_reset_records_title"))
-                        .message(tr("mi_reset_records_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(crate::res::str::reset_records_title())
+                        .message(crate::res::str::reset_records_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1414,26 +1439,29 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_mines")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("mi-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("mi-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("mi-vibrations").any(),
             ),
             chrome::setting_row(
-                tr("mi_flag_mode"),
+                crate::res::str::flag_mode(),
                 toggle(ui.flag_mode).id("mi-flag-setting").any(),
             ),
-            chrome::section_heading(tr("mi_records")),
+            chrome::section_heading(crate::res::str::records()),
             line(Difficulty::Easy),
             line(Difficulty::Medium),
             line(Difficulty::Hard),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.pop())
                 .id("mi-done"),
@@ -1447,16 +1475,16 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
 
 fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     chrome::instructions_card(
-        tr("nav_mines"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("mi_help_intro")),
-            Help::Heading(tr("mi_help_play")),
-            Help::Para(tr("mi_help_play_1")),
-            Help::Para(tr("mi_help_play_2")),
-            Help::Para(tr("mi_help_play_3")),
-            Help::Para(tr("mi_help_play_4")),
-            Help::Heading(tr("mi_help_keys")),
-            Help::Para(tr("mi_help_keys_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Para(crate::res::str::help_play_4()),
+            Help::Heading(crate::res::str::help_keys()),
+            Help::Para(crate::res::str::help_keys_1()),
         ],
         "mi-help-done",
         move || ui.pop(),

@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = 水管
+moves = 旋转次数
+connected = 已连接
+goal = 将所有水管连到金色水源。
+solved = 全部接通！
+lock_mode = 锁定模式
+locked = 已锁定
+unlocked = 未锁定
+north = 上
+east = 右
+south = 下
+west = 左
+selection = 第 { $row } 行，第 { $column } 列：{ $ports }。{ $state }。
+board_a11y = 水管棋盘。方向键选择，回车旋转，L 锁定或解锁。
+size = 棋盘大小
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = 开始解谜
+restart = 重新开始
+best = 此尺寸最少旋转次数
+help_goal = 旋转方块，将全部水管连到中央金色水源。已连接的水管会发出青绿色光。每个管口都必须接上另一根管，不能朝向棋盘外。
+help_controls = 点击方块可顺时针旋转四分之一圈。端点、弯管、直管和分支组成同一个网络。每题都有解，全部连通后会出现庆祝光波。
+help_locks = 开启锁定模式，点击方块锁定或解锁。锁定后不能旋转。关闭该模式可继续旋转。重新开始会恢复初始乱序，清除锁定和旋转计数。
+help_keys = 键盘方向键选择，空格或回车旋转，L 锁定，P 或 Esc 暂停。离开时保存进度。新游戏可选 5 × 5、7 × 7 或 9 × 9。

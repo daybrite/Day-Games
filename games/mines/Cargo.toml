@@ -17,3 +17,6 @@ day-fluent = { git = "https://github.com/daybrite/day.git" }
 day-part-haptics = { git = "https://github.com/daybrite/day.git" }
 gamekit = { path = "../../gamekit" }
 serde = { version = "1", features = ["derive"] }
+
+[build-dependencies]
+day-build = { git = "https://github.com/daybrite/day.git" }

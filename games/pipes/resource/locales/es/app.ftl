@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Tuberías
+moves = Giros
+connected = Conectadas
+goal = Conecta cada tubería con la fuente dorada.
+solved = ¡Todo conectado!
+lock_mode = Modo bloqueo
+locked = Bloqueada
+unlocked = Desbloqueada
+north = arriba
+east = derecha
+south = abajo
+west = izquierda
+selection = Fila { $row }, columna { $column }: { $ports }. { $state }.
+board_a11y = Tablero de Tuberías. Las flechas seleccionan, Intro gira y L bloquea o desbloquea.
+size = Tamaño del tablero
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Iniciar puzle
+restart = Reiniciar puzle
+best = Menos giros · este tamaño
+help_goal = Gira las piezas para unir todas las tuberías a la fuente dorada central. Las conectadas brillan en turquesa. Cada extremo debe unirse a otra tubería; ninguno puede salir del tablero.
+help_controls = Toca para girar 90° en sentido horario. Extremos, codos, rectas y ramales forman una sola red. Todos los puzles tienen solución; una onda de luz celebra la conexión completa.
+help_locks = Activa el modo bloqueo y toca piezas para bloquearlas o liberarlas. El candado impide girar. Desactívalo para seguir girando. Reiniciar restaura el desorden inicial y borra bloqueos y contador.
+help_keys = Usa flechas para seleccionar, Espacio o Intro para girar, L para bloquear y P o Escape para pausar. Se guarda al salir. Nueva partida permite elegir 5 × 5, 7 × 7 o 9 × 9.

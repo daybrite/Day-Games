@@ -121,7 +121,9 @@ day launch -p ios-uikit --script dayscript/games.yaml
 - `gamekit/` is the shared persistence layer: each game's state is saved when its cover closes
   or the app is backgrounded, and restored the next time it opens. A game that keeps a clock
   can also hook the backgrounding itself, which is how Sudoku pauses.
-- `resource/locales/en/app.ftl` carries every user-facing string.
+- Each game and `gamekit` owns its `resource/locales/<locale>/*.ftl` catalogs and generated
+  `res::str` accessors; the app root keeps identity and permission text. See
+  [localization](docs/localization.md).
 - `platform/` holds the thin native host projects the Apple, Android, and HarmonyOS targets
   build through.
 
@@ -135,3 +137,9 @@ home grid, while pause, close, and the home tiles still respond. Ordinary dayscr
 address a node directly and cannot detect this form of touch-through.
 
 Day Games is open source under the Apache-2.0 license.
+
+## Languages
+
+All ten games have interface translations in 13 languages, including Arabic and Simplified
+Chinese. See [localization](docs/localization.md) for the locale list, translated Charades
+decks, store metadata and browser testing.

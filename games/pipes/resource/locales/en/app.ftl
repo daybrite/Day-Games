@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Pipes
+moves = Rotations
+connected = Connected
+goal = Connect every pipe to the gold source.
+solved = All connected!
+lock_mode = Lock mode
+locked = Locked
+unlocked = Unlocked
+north = up
+east = right
+south = down
+west = left
+selection = Row { $row }, column { $column }: { $ports }. { $state }.
+board_a11y = Pipes board. Arrows select a tile, Enter rotates, and L locks or unlocks it.
+size = Board size
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Start puzzle
+restart = Restart puzzle
+best = Fewest rotations · this size
+help_goal = Rotate the tiles to connect every pipe to the gold source in the center. Connected pipes light up turquoise. All pipe ends must meet another pipe; nothing may point off the board.
+help_controls = Tap a tile to rotate it a quarter-turn clockwise. End caps, bends, straight pipes, and branches all belong to one network. Every puzzle has a solution. A wave of light celebrates when the whole network connects.
+help_locks = Turn on Lock mode, then tap tiles to lock or unlock them. A padlock protects a tile from rotation. Turn Lock mode off to keep rotating. Restart puzzle restores the original scramble and clears your locks and rotation count.
+help_keys = On a keyboard, use the arrows to select a tile, Space or Enter to rotate it, and L to lock or unlock it. Press P or Escape to pause. Progress saves when you leave. Choose a 5 × 5, 7 × 7, or 9 × 9 board in New Game.

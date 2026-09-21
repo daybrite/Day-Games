@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = 等级
+lines = 行数
+next = 下一个
+next_a11y = 下一个方块
+game_over = 游戏结束
+clear_single = 单行
+clear_double = 双行
+clear_triple = 三行
+clear_sirtet = 四行全消！
+help_intro = 堆叠下落的方块，填满并消除整行，别让场地堆满。
+help_play = 玩法说明
+help_play_1 = • **左右拖动**或使用键盘方向键移动方块。
+help_play_2 = • **轻点**旋转方块。
+help_play_3 = • **向下拖动**加速下落。
+help_lines = 消除行
+help_lines_1 = • 填满一整行即可消除。
+help_lines_2 = • **同时消除多行**可获得额外分数，一次消除四行奖励最高。
+help_levels = 等级与速度
+help_levels_1 = 消除行数越多，等级越高，方块下落越快。
+help_over_1 = 新方块无法进入场地时，游戏结束。

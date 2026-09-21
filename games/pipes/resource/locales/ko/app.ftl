@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = 파이프
+moves = 회전 수
+connected = 연결됨
+goal = 모든 파이프를 금색 수원에 연결하세요.
+solved = 모두 연결됐어요!
+lock_mode = 잠금 모드
+locked = 잠김
+unlocked = 잠금 해제
+north = 위
+east = 오른쪽
+south = 아래
+west = 왼쪽
+selection = { $row }행 { $column }열: { $ports }. { $state }.
+board_a11y = 파이프 보드. 방향키로 선택, Enter로 회전, L로 잠금 전환.
+size = 보드 크기
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = 퍼즐 시작
+restart = 퍼즐 다시 시작
+best = 최소 회전 수 · 이 크기
+help_goal = 타일을 돌려 모든 파이프를 중앙 금색 수원에 연결하세요. 연결된 파이프는 청록색으로 빛납니다. 모든 끝은 다른 파이프와 만나야 하며 보드 밖을 향하면 안 됩니다.
+help_controls = 탭하면 시계 방향으로 90도 회전합니다. 끝마개, 굽은 관, 직선과 분기가 하나의 망을 이룹니다. 모든 퍼즐은 풀 수 있으며 완성되면 빛의 물결이 퍼집니다.
+help_locks = 잠금 모드를 켜고 탭해 잠그거나 푸세요. 자물쇠가 있으면 회전하지 않습니다. 모드를 끄면 다시 회전할 수 있습니다. 다시 시작은 초기 배치로 돌아가 잠금과 횟수를 초기화합니다.
+help_keys = 방향키로 선택, Space나 Enter로 회전, L로 잠금, P나 Escape로 일시 정지합니다. 나가면 저장됩니다. 새 게임에서 5 × 5, 7 × 7, 9 × 9를 고르세요.

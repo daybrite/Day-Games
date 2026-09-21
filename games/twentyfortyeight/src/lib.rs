@@ -2,10 +2,11 @@
 //! Day's frame clock (§8.4). A composite Day piece: pure composition over `day_pieces`. Swipe to
 //! move; combine equal tiles to reach 2048.
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_pieces::prelude::*;
 use gamekit::chrome::cues::{self, with};
 use gamekit::chrome::{self, Cue, Feedback, Help, Sfx, sfx};
@@ -83,16 +84,16 @@ impl Difficulty {
     /// Literal `tr` keys, so `day lint` tracks their coverage.
     fn label(self) -> day_fluent::LocalizedText {
         match self {
-            Difficulty::Easy => tr("tf_easy"),
-            Difficulty::Normal => tr("tf_normal"),
-            Difficulty::Hard => tr("tf_hard"),
+            Difficulty::Easy => crate::res::str::easy(),
+            Difficulty::Normal => crate::res::str::normal(),
+            Difficulty::Hard => crate::res::str::hard(),
         }
     }
     fn detail(self) -> day_fluent::LocalizedText {
         match self {
-            Difficulty::Easy => tr("tf_detail_easy"),
-            Difficulty::Normal => tr("tf_detail_normal"),
-            Difficulty::Hard => tr("tf_detail_hard"),
+            Difficulty::Easy => crate::res::str::detail_easy(),
+            Difficulty::Normal => crate::res::str::detail_normal(),
+            Difficulty::Hard => crate::res::str::detail_hard(),
         }
     }
     fn id(self) -> &'static str {
@@ -700,7 +701,7 @@ impl Game {
                 Color::rgba(0.93, 0.89, 0.85, 0.72),
             );
             d.text(
-                &tr("tf_game_over").format(),
+                &crate::res::str::game_over().format(),
                 Point::new(ox + size / 2.0, oy + size / 2.0 - 12.0),
                 TextStyle {
                     size: 30.0,
@@ -711,7 +712,7 @@ impl Game {
             );
         } else if self.won {
             d.text(
-                &tr("tf_keep_going").format(),
+                &crate::res::str::keep_going().format(),
                 Point::new(ox + size / 2.0, oy + size + 28.0),
                 TextStyle {
                     size: 16.0,
@@ -996,7 +997,7 @@ pub fn twentyfortyeight_page() -> AnyPiece {
                         Color::hex(0xBB_AD_A0).with_alpha(if on { 0.35 } else { 0.18 }),
                     );
                     d.text(
-                        &tr("tf_undo").arg("n", g.undos_left as f64).format(),
+                        &crate::res::str::undo(g.undos_left as f64).format(),
                         Point::new(sz.width / 2.0, sz.height / 2.0),
                         TextStyle {
                             size: 13.0,
@@ -1007,14 +1008,17 @@ pub fn twentyfortyeight_page() -> AnyPiece {
                     );
                 })
                 .on_tap(move || tu.undo())
-                .a11y(|a| a.label(tr("tf_undo_a11y").format()).role(Role::Button))
+                .a11y(|a| {
+                    a.label(crate::res::str::undo_a11y().format())
+                        .role(Role::Button)
+                })
                 .id("tf-undo")
                 .frame(92.0, 44.0)
             },
         )
     };
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_2048"), "tf-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "tf-pause", move || {
         pu.pause();
         pu.cue(&cues::SELECT);
     });
@@ -1034,7 +1038,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     let (su, du, bu) = (ui.clone(), ui.clone(), ui.clone());
     let ink = Color::hex(0x77_6E_65);
     let score = chrome::info_stat(
-        tr("gk_score"),
+        gamekit::res::str::score(),
         move || {
             su.repaint.track();
             su.game.borrow().score.to_string()
@@ -1045,7 +1049,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .min_width(80.0)
     .any();
     let difficulty = chrome::info_stat(
-        tr("tf_difficulty"),
+        crate::res::str::difficulty(),
         move || {
             du.repaint.track();
             du.game.borrow().difficulty.label().format()
@@ -1056,7 +1060,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .min_width(80.0)
     .any();
     let best = chrome::info_stat(
-        tr("gk_best"),
+        gamekit::res::str::best(),
         move || {
             bu.repaint.track();
             bu.game.borrow().best.to_string()
@@ -1146,23 +1150,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "tf-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "tf-new-game", move || {
-                u2.pick_difficulty()
-            }),
-            chrome::menu_button(tr("gk_settings"), chrome::SLATE, "tf-settings", move || {
-                u3.show(Overlay::Settings)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "tf-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "tf-new-game",
+                move || u2.pick_difficulty(),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
+                chrome::SLATE,
+                "tf-settings",
+                move || u3.show(Overlay::Settings),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "tf-instructions",
                 move || u4.show(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "tf-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "tf-quit", || {
                 nav_back();
             }),
         ))
@@ -1178,27 +1191,30 @@ fn won_card(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2) = (ui.clone(), ui);
     chrome::card(
         column((
-            chrome::card_title(tr("tf_won_title"), chrome::GOLD),
-            label(tr("tf_won_message"))
+            chrome::card_title(crate::res::str::won_title(), chrome::GOLD),
+            label(crate::res::str::won_message())
                 .color(chrome::TEXT)
                 .align(TextAlign::Center)
                 .width(260.0),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::Title,
                 Color::WHITE,
                 "tf-won-score",
             ),
             chrome::menu_button(
-                tr("tf_keep_going"),
+                crate::res::str::keep_going(),
                 chrome::GREEN,
                 "tf-keep-going",
                 move || u1.show(Overlay::None),
             ),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "tf-new-game", move || {
-                u2.pick_difficulty()
-            }),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "tf-new-game",
+                move || u2.pick_difficulty(),
+            ),
         ))
         .spacing(14.0)
         .align(HAlign::Center),
@@ -1215,7 +1231,7 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let record = when(
         move || score >= best && score > 0,
         || {
-            label(tr("gk_new_high_score"))
+            label(gamekit::res::str::new_high_score())
                 .font(Font::Title3)
                 .bold()
                 .color(chrome::GOLD)
@@ -1224,16 +1240,16 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("gk_game_over"), Color::WHITE),
+            chrome::card_title(gamekit::res::str::game_over(), Color::WHITE),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::LargeTitle,
                 chrome::GOLD,
                 "tf-final-score",
             ),
             chrome::stat(
-                tr("gk_best"),
+                gamekit::res::str::best(),
                 best.to_string(),
                 Font::Title3,
                 Color::WHITE,
@@ -1241,12 +1257,12 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
             ),
             record,
             chrome::menu_button(
-                tr("gk_play_again"),
+                gamekit::res::str::play_again(),
                 chrome::BLUE,
                 "tf-play-again",
                 move || u.pick_difficulty(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "tf-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "tf-quit", || {
                 nav_back();
             }),
         ))
@@ -1307,12 +1323,12 @@ fn difficulty_picker(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            label(tr("tf_choose_difficulty"))
+            label(crate::res::str::choose_difficulty())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
             column(PieceVec(cards)).spacing(12.0),
-            button(tr("gk_cancel"))
+            button(gamekit::res::str::cancel())
                 .action(move || {
                     let back = u.return_to.replace(Overlay::None);
                     u.show(back);
@@ -1329,15 +1345,15 @@ fn difficulty_picker(ui: Rc<Ui>) -> AnyPiece {
 fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let reset = {
         let u = ui.clone();
-        button(tr("gk_reset_high_score"))
+        button(gamekit::res::str::reset_high_score())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("gk_reset_high_score_title"))
-                        .message(tr("gk_reset_high_score_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(gamekit::res::str::reset_high_score_title())
+                        .message(gamekit::res::str::reset_high_score_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1352,19 +1368,22 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_2048")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("tf-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("tf-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("tf-vibrations").any(),
             ),
-            chrome::section_heading(tr("gk_data")),
+            chrome::section_heading(gamekit::res::str::data()),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.show(Overlay::Pause))
                 .id("tf-done"),
@@ -1379,21 +1398,21 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
 fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     let live = ui.game.borrow().score > 0 && !ui.game.borrow().game_over;
     chrome::instructions_card(
-        tr("nav_2048"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("tf_help_intro")),
-            Help::Heading(tr("tf_help_play")),
-            Help::Para(tr("tf_help_play_1")),
-            Help::Para(tr("tf_help_play_2")),
-            Help::Para(tr("tf_help_play_3")),
-            Help::Heading(tr("tf_help_goal")),
-            Help::Para(tr("tf_help_goal_1")),
-            Help::Heading(tr("gk_game_over_heading")),
-            Help::Para(tr("tf_help_over_1")),
-            Help::Heading(tr("tf_help_tips")),
-            Help::Para(tr("tf_help_tips_1")),
-            Help::Para(tr("tf_help_tips_2")),
-            Help::Para(tr("tf_help_tips_3")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Heading(crate::res::str::help_goal()),
+            Help::Para(crate::res::str::help_goal_1()),
+            Help::Heading(gamekit::res::str::game_over_heading()),
+            Help::Para(crate::res::str::help_over_1()),
+            Help::Heading(crate::res::str::help_tips()),
+            Help::Para(crate::res::str::help_tips_1()),
+            Help::Para(crate::res::str::help_tips_2()),
+            Help::Para(crate::res::str::help_tips_3()),
         ],
         "tf-help-done",
         move || ui.show(if live { Overlay::Pause } else { Overlay::None }),

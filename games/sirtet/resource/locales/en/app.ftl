@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = Level
+lines = Lines
+next = Next
+next_a11y = Next piece
+game_over = Game Over
+clear_single = SINGLE
+clear_double = DOUBLE
+clear_triple = TRIPLE
+clear_sirtet = SIRTET!
+help_intro = Stack the falling pieces and clear complete rows before the well fills up.
+help_play = How to play
+help_play_1 = • **Drag left or right** to move the falling piece; on a keyboard, the arrow keys move it.
+help_play_2 = • **Tap** to rotate the piece.
+help_play_3 = • **Drag down** to drop the piece faster.
+help_lines = Clearing lines
+help_lines_1 = • Fill a complete horizontal row to clear it.
+help_lines_2 = • Clearing **several lines at once** scores extra. Four at a time is the biggest reward.
+help_levels = Levels and speed
+help_levels_1 = The game speeds up as you clear lines. Higher levels drop pieces faster.
+help_over_1 = The game ends when a new piece can no longer enter the well.

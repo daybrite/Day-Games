@@ -39,4 +39,4 @@ min_height = 640
 # Charades reads the accelerometer, which HarmonyOS gates behind a permission in the app's
 # module.json5; Day's portable permission set has no key for it (docs/permissions.md).
 [permissions.raw]
-ohos = [{ name = "ohos.permission.ACCELEROMETER", reason = "Charades reads the phone's tilt to score a nod.", when = "inuse" }]
+ohos = [{ name = "ohos.permission.ACCELEROMETER", when = "inuse" }]

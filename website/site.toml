@@ -4,7 +4,7 @@
 # only what is genuinely site-specific.
 
 host = "https://daybrite.github.io/Day-Games"
-locales = ["en"]
+locales = ["en", "ar", "de", "es", "fr", "hi", "id", "it", "ja", "ko", "pt-BR", "ru", "zh-CN"]
 
 # The orange of the Breakout wall and the 2048 tiles, deep enough to read as link text on white.
 accent-color = "#D9641E"

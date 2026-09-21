@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = PAUSED
+resume = Resume
+new_game = New Game
+settings = Settings
+instructions = Instructions
+quit = Quit Game
+play_again = Play Again
+game_over = GAME OVER
+score = Score
+best = Best
+new_high_score = New High Score!
+sounds = Sounds
+vibrations = Vibrations
+data = Data
+cancel = Cancel
+reset_high_score = Reset High Score
+reset_high_score_title = Reset High Score?
+reset_high_score_message = This will permanently reset the high score to zero.
+reset_confirm = Reset
+game_over_heading = Game over

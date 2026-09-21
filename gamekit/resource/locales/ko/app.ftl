@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = 일시정지
+resume = 계속하기
+new_game = 새 게임
+settings = 설정
+instructions = 방법
+quit = 게임 종료
+play_again = 다시 하기
+game_over = 게임 오버
+score = 점수
+best = 최고 기록
+new_high_score = 최고 점수 갱신!
+sounds = 효과음
+vibrations = 진동
+data = 데이터
+cancel = 취소
+reset_high_score = 최고 점수 초기화
+reset_high_score_title = 최고 점수를 초기화할까요?
+reset_high_score_message = 최고 점수가 영구적으로 0으로 초기화됩니다.
+reset_confirm = 초기화
+game_over_heading = 게임 종료

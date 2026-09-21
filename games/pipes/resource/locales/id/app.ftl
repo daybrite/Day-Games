@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Pipa
+moves = Putaran
+connected = Terhubung
+goal = Hubungkan semua pipa ke sumber emas.
+solved = Semua terhubung!
+lock_mode = Mode kunci
+locked = Terkunci
+unlocked = Terbuka
+north = atas
+east = kanan
+south = bawah
+west = kiri
+selection = Baris { $row }, kolom { $column }: { $ports }. { $state }.
+board_a11y = Papan Pipa. Panah memilih, Enter memutar, L mengunci atau membuka.
+size = Ukuran papan
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Mulai teka-teki
+restart = Ulangi teka-teki
+best = Putaran tersedikit · ukuran ini
+help_goal = Putar ubin untuk menghubungkan semua pipa ke sumber emas di tengah. Pipa terhubung menyala biru kehijauan. Semua ujung harus bertemu pipa lain, bukan keluar papan.
+help_controls = Ketuk untuk memutar 90° searah jarum jam. Ujung, siku, pipa lurus, dan cabang membentuk satu jaringan. Semua teka-teki punya solusi. Gelombang cahaya merayakan jaringan lengkap.
+help_locks = Aktifkan mode kunci lalu ketuk ubin untuk mengunci atau membuka. Gembok mencegah putaran. Matikan mode untuk memutar lagi. Ulangi mengembalikan susunan awal dan menghapus kunci serta hitungan putaran.
+help_keys = Panah memilih, Spasi atau Enter memutar, L mengunci, P atau Escape menjeda. Progres tersimpan saat keluar. Permainan baru menawarkan 5 × 5, 7 × 7, atau 9 × 9.

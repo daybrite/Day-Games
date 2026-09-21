@@ -1,31 +1,16 @@
-Games worth keeping on your phone, in one app that never asks you for anything.
+Ten classic games in one app. Play offline, without ads, purchases or an account. Your games are saved automatically so you can continue later.
 
-SOLITAIRE
-Klondike, turning one card at a time or three. With Winnable Deals Only on, a solver plays every deal through to a win before it reaches the table, and Hint shows a move on the way. Once every card is face up, the rest fly home by themselves.
+SOLITAIRE — Klondike with one-card or three-card draws, hints and an option for deals verified to be winnable.
+BLOCK BLAST — Place blocks, clear rows and columns, and build combos.
+BREAKOUT — Bounce the ball, break bricks and collect power-ups.
+SIRTET — Rotate falling blocks and complete lines as the pace increases.
+SUDOKU — Choose a difficulty, make notes, use hints and save checkpoints.
+2048 — Slide and merge matching tiles. Keep playing after reaching 2048.
+CHARADES — Guess with friends using themed word decks. Use buttons or, on supported devices, tilt controls.
+MINES — Uncover safe squares and flag mines. Your first move is always safe.
+REVERSI — Flip your opponent's discs. Play against the computer or share a device with a friend.
+PIPES — Rotate pipe tiles to connect the whole network.
 
-BLOCK BLAST
-Drag pieces onto the board and fill rows and columns to clear them. Clear on back-to-back moves for a combo, or empty the whole board for a 5,000-point bonus.
+Menus, instructions and accessibility labels are available in 13 languages. Charades includes localized animal and food decks; the English collection has additional themes.
 
-BREAKOUT
-Clear the bricks. Power-ups widen the paddle, slow the ball, or let it smash straight through. Levels get faster.
-
-FALLING BLOCKS
-The one you already know how to play. Lines clear, the level climbs, the pieces come quicker.
-
-SUDOKU
-Puzzles at several difficulties, with the number pad where your thumb already is.
-
-2048
-Slide the tiles, watch them merge, chase your best score. Reaching 2048 is not the end if you do not want it to be.
-
-CHARADES
-Hold the phone to your forehead while your friends give clues, nod when you guess right, and tip your head back to pass. Decks run from animals and movies to sayings and things to act out, and the screen stays on for the whole round.
-
-MINES
-The classic sweeper. Your first tap is always safe, holding a square plants a flag, and a number with all its flags opens the rest around it. Three board sizes, each shaped to fit your screen.
-
-WHAT IT DOES NOT DO
-
-No advertising. No purchases. No account. No network access at all — every game runs entirely on your device. Your progress is saved when you leave a game and restored when you come back, including if the phone puts the app to sleep mid-round.
-
-Open source, built with the Day framework: one Rust codebase drawing itself with each platform's real native widgets. github.com/daybrite/Day-Games
+Open source, built with the Day framework using each platform's native interface. Source: github.com/daybrite/Day-Games

@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Tubi
+moves = Rotazioni
+connected = Collegati
+goal = Collega ogni tubo alla sorgente dorata.
+solved = Tutto collegato!
+lock_mode = Modalità blocco
+locked = Bloccato
+unlocked = Sbloccato
+north = su
+east = destra
+south = giù
+west = sinistra
+selection = Riga { $row }, colonna { $column }: { $ports }. { $state }.
+board_a11y = Tabellone dei Tubi. Le frecce selezionano, Invio ruota e L blocca o sblocca.
+size = Dimensione del tabellone
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Inizia rompicapo
+restart = Ricomincia rompicapo
+best = Meno rotazioni · questa dimensione
+help_goal = Ruota le tessere per collegare tutti i tubi alla sorgente dorata centrale. I tubi collegati diventano turchesi. Ogni estremità deve incontrare un tubo, senza uscire dal tabellone.
+help_controls = Tocca per ruotare di 90° in senso orario. Terminali, curve, tratti dritti e diramazioni formano un'unica rete. Ogni rompicapo è risolvibile. Un'onda luminosa celebra il collegamento completo.
+help_locks = Attiva la modalità blocco e tocca per bloccare o liberare tessere. Un lucchetto impedisce la rotazione. Disattivala per ruotare. Ricomincia ripristina il disordine iniziale e azzera blocchi e contatore.
+help_keys = Usa frecce per scegliere, Spazio o Invio per ruotare, L per bloccare e P o Esc per la pausa. I progressi si salvano all'uscita. Nuova partita offre 5 × 5, 7 × 7 o 9 × 9.

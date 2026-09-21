@@ -8,11 +8,12 @@
 //! On a keyboard, 1–3 pick up a piece, the arrows move it, and the same digit drops it. The
 //! rules live in model.rs.
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::f64::consts::{PI, TAU};
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_geometry::Affine;
 use day_part_haptics::Haptic;
 use day_pieces::prelude::*;
@@ -250,39 +251,39 @@ fn tier_color(tier: u8) -> Color {
 /// tracks their coverage.
 fn message(tier: u8, pick: usize) -> day_fluent::LocalizedText {
     match (tier, pick % 3) {
-        (1, 0) => tr("bb_msg_nice"),
-        (1, 1) => tr("bb_msg_good"),
-        (1, _) => tr("bb_msg_sweet"),
-        (2, 0) => tr("bb_msg_great"),
-        (2, 1) => tr("bb_msg_smooth"),
-        (2, _) => tr("bb_msg_slick"),
-        (3, 0) => tr("bb_msg_awesome"),
-        (3, 1) => tr("bb_msg_excellent"),
-        (3, _) => tr("bb_msg_fantastic"),
-        (4, 0) => tr("bb_msg_amazing"),
-        (4, 1) => tr("bb_msg_incredible"),
-        (4, _) => tr("bb_msg_spectacular"),
-        (5, 0) => tr("bb_msg_unbelievable"),
-        (5, 1) => tr("bb_msg_legendary"),
-        (5, _) => tr("bb_msg_unstoppable"),
-        (_, 0) => tr("bb_msg_perfect"),
-        (_, _) => tr("bb_msg_flawless"),
+        (1, 0) => crate::res::str::msg_nice(),
+        (1, 1) => crate::res::str::msg_good(),
+        (1, _) => crate::res::str::msg_sweet(),
+        (2, 0) => crate::res::str::msg_great(),
+        (2, 1) => crate::res::str::msg_smooth(),
+        (2, _) => crate::res::str::msg_slick(),
+        (3, 0) => crate::res::str::msg_awesome(),
+        (3, 1) => crate::res::str::msg_excellent(),
+        (3, _) => crate::res::str::msg_fantastic(),
+        (4, 0) => crate::res::str::msg_amazing(),
+        (4, 1) => crate::res::str::msg_incredible(),
+        (4, _) => crate::res::str::msg_spectacular(),
+        (5, 0) => crate::res::str::msg_unbelievable(),
+        (5, 1) => crate::res::str::msg_legendary(),
+        (5, _) => crate::res::str::msg_unstoppable(),
+        (_, 0) => crate::res::str::msg_perfect(),
+        (_, _) => crate::res::str::msg_flawless(),
     }
 }
 
 fn difficulty_label(d: Difficulty) -> day_fluent::LocalizedText {
     match d {
-        Difficulty::Easy => tr("bb_easy"),
-        Difficulty::Normal => tr("bb_normal"),
-        Difficulty::Hard => tr("bb_hard"),
+        Difficulty::Easy => crate::res::str::easy(),
+        Difficulty::Normal => crate::res::str::normal(),
+        Difficulty::Hard => crate::res::str::hard(),
     }
 }
 
 fn difficulty_detail(d: Difficulty) -> day_fluent::LocalizedText {
     match d {
-        Difficulty::Easy => tr("bb_detail_easy"),
-        Difficulty::Normal => tr("bb_detail_normal"),
-        Difficulty::Hard => tr("bb_detail_hard"),
+        Difficulty::Easy => crate::res::str::detail_easy(),
+        Difficulty::Normal => crate::res::str::detail_normal(),
+        Difficulty::Hard => crate::res::str::detail_hard(),
     }
 }
 
@@ -789,9 +790,9 @@ impl Play {
         if tier > 0 {
             let pick = fx.rng.below(3);
             let sub = if p.combo >= 2 {
-                Some(tr("bb_combo").arg("n", p.combo as f64).format())
+                Some(crate::res::str::combo(p.combo as f64).format())
             } else if p.lines() >= 2 {
-                Some(tr("bb_lines").arg("n", p.lines() as f64).format())
+                Some(crate::res::str::lines(p.lines() as f64).format())
             } else {
                 None
             };
@@ -1640,7 +1641,7 @@ pub fn blockblast_page() -> AnyPiece {
             }
             ku.repaint.notify();
         })
-        .a11y(|a| a.label(tr("bb_board_a11y").format()))
+        .a11y(|a| a.label(crate::res::str::board_a11y().format()))
         .id("bb-canvas")
         .grow()
     };
@@ -1655,7 +1656,7 @@ pub fn blockblast_page() -> AnyPiece {
     };
 
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_blockblast"), "bb-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "bb-pause", move || {
         pu.pause();
         pu.cue(&cues::SELECT);
     });
@@ -1672,7 +1673,7 @@ pub fn blockblast_page() -> AnyPiece {
 fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     let (su, bu) = (ui.clone(), ui.clone());
     let score = chrome::info_stat(
-        tr("gk_score"),
+        gamekit::res::str::score(),
         move || {
             su.hud.track();
             (su.play.borrow().fx.shown_score.round() as i64).to_string()
@@ -1684,7 +1685,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .min_width(88.0)
     .any();
     let best = chrome::info_stat(
-        tr("gk_best"),
+        gamekit::res::str::best(),
         move || {
             bu.hud.track();
             (bu.play.borrow().fx.shown_best.round() as i64).to_string()
@@ -1751,23 +1752,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "bb-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "bb-new-game", move || {
-                u2.pick_difficulty()
-            }),
-            chrome::menu_button(tr("gk_settings"), chrome::SLATE, "bb-settings", move || {
-                u3.show(Overlay::Settings)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "bb-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "bb-new-game",
+                move || u2.pick_difficulty(),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
+                chrome::SLATE,
+                "bb-settings",
+                move || u3.show(Overlay::Settings),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "bb-instructions",
                 move || u4.show(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "bb-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "bb-quit", || {
                 nav_back();
             }),
         ))
@@ -1786,7 +1796,7 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let record = when(
         move || score >= best && score > 0,
         || {
-            label(tr("gk_new_high_score"))
+            label(gamekit::res::str::new_high_score())
                 .font(Font::Title3)
                 .bold()
                 .color(chrome::GOLD)
@@ -1795,17 +1805,17 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("gk_game_over"), Color::WHITE),
-            label(tr("bb_no_moves")).color(chrome::TEXT_DIM),
+            chrome::card_title(gamekit::res::str::game_over(), Color::WHITE),
+            label(crate::res::str::no_moves()).color(chrome::TEXT_DIM),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::LargeTitle,
                 chrome::GOLD,
                 "bb-final-score",
             ),
             chrome::stat(
-                tr("gk_best"),
+                gamekit::res::str::best(),
                 best.to_string(),
                 Font::Title3,
                 Color::WHITE,
@@ -1817,12 +1827,12 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
                 .color(accent(difficulty)),
             record,
             chrome::menu_button(
-                tr("gk_play_again"),
+                gamekit::res::str::play_again(),
                 chrome::BLUE,
                 "bb-play-again",
                 move || u.pick_difficulty(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "bb-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "bb-quit", || {
                 nav_back();
             }),
         ))
@@ -1883,12 +1893,12 @@ fn difficulty_picker(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            label(tr("bb_choose_difficulty"))
+            label(crate::res::str::choose_difficulty())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
             column(PieceVec(cards)).spacing(12.0),
-            button(tr("gk_cancel"))
+            button(gamekit::res::str::cancel())
                 .action(move || {
                     let back = u.return_to.replace(Overlay::None);
                     u.show(back);
@@ -1905,15 +1915,15 @@ fn difficulty_picker(ui: Rc<Ui>) -> AnyPiece {
 fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let reset = {
         let u = ui.clone();
-        button(tr("gk_reset_high_score"))
+        button(gamekit::res::str::reset_high_score())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("gk_reset_high_score_title"))
-                        .message(tr("gk_reset_high_score_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(gamekit::res::str::reset_high_score_title())
+                        .message(gamekit::res::str::reset_high_score_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1933,19 +1943,22 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_blockblast")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("bb-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("bb-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("bb-vibrations").any(),
             ),
-            chrome::section_heading(tr("gk_data")),
+            chrome::section_heading(gamekit::res::str::data()),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.show(Overlay::Pause))
                 .id("bb-done"),
@@ -1963,21 +1976,21 @@ fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
         p.model.score > 0 && !p.model.game_over
     };
     chrome::instructions_card(
-        tr("nav_blockblast"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("bb_help_intro")),
-            Help::Heading(tr("bb_help_play")),
-            Help::Para(tr("bb_help_play_1")),
-            Help::Para(tr("bb_help_play_2")),
-            Help::Para(tr("bb_help_play_3")),
-            Help::Heading(tr("bb_help_score")),
-            Help::Para(tr("bb_help_score_1")),
-            Help::Para(tr("bb_help_score_2")),
-            Help::Para(tr("bb_help_score_3")),
-            Help::Heading(tr("bb_help_difficulty")),
-            Help::Para(tr("bb_help_difficulty_1")),
-            Help::Heading(tr("gk_game_over_heading")),
-            Help::Para(tr("bb_help_over_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Heading(crate::res::str::help_score()),
+            Help::Para(crate::res::str::help_score_1()),
+            Help::Para(crate::res::str::help_score_2()),
+            Help::Para(crate::res::str::help_score_3()),
+            Help::Heading(crate::res::str::help_difficulty()),
+            Help::Para(crate::res::str::help_difficulty_1()),
+            Help::Heading(gamekit::res::str::game_over_heading()),
+            Help::Para(crate::res::str::help_over_1()),
         ],
         "bb-help-done",
         move || ui.show(if live { Overlay::Pause } else { Overlay::None }),

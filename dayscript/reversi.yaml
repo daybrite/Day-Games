@@ -55,7 +55,7 @@ flow:
   - assert_text: { id: rv-white-score, text: "1" }
   - tap: { id: rv-resume }
   - pause: { secs: 1.8 }
-  - assert_text: { id: rv-status, key: rv_black_turn }
+  - assert_text: { id: rv-status, key: reversi::black_turn }
   - assert_text: { id: rv-black-score, text: "3" }
   - assert_text: { id: rv-white-score, text: "3" }
   - screenshot: reversi-computer

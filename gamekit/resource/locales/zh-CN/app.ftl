@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = 已暂停
+resume = 继续
+new_game = 新游戏
+settings = 设置
+instructions = 玩法说明
+quit = 退出游戏
+play_again = 再玩一次
+game_over = 游戏结束
+score = 得分
+best = 最佳
+new_high_score = 新纪录！
+sounds = 音效
+vibrations = 振动
+data = 数据
+cancel = 取消
+reset_high_score = 重置最高分
+reset_high_score_title = 重置最高分？
+reset_high_score_message = 最高分将永久重置为零。
+reset_confirm = 重置
+game_over_heading = 游戏结束

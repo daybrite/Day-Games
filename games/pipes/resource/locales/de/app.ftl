@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Rohre
+moves = Drehungen
+connected = Verbunden
+goal = Verbinde alle Rohre mit der goldenen Quelle.
+solved = Alles verbunden!
+lock_mode = Sperrmodus
+locked = Gesperrt
+unlocked = Entsperrt
+north = oben
+east = rechts
+south = unten
+west = links
+selection = Zeile { $row }, Spalte { $column }: { $ports }. { $state }.
+board_a11y = Rohrfeld. Pfeile wählen, Eingabe dreht, L sperrt oder entsperrt.
+size = Spielfeldgröße
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Rätsel starten
+restart = Rätsel neu starten
+best = Wenigste Drehungen · diese Größe
+help_goal = Drehe die Teile, bis alle Rohre mit der goldenen Quelle verbunden sind. Verbundene Rohre leuchten türkis. Jedes Ende muss ein Rohr treffen, keines darf über den Rand zeigen.
+help_controls = Antippen dreht ein Teil um 90° im Uhrzeigersinn. Enden, Bögen, Geraden und Abzweigungen bilden ein Netz. Jedes Rätsel ist lösbar. Ein Lichtimpuls feiert das vollständige Netz.
+help_locks = Im Sperrmodus sperrt oder entsperrt Antippen die Teile. Ein Schloss verhindert Drehungen. Schalte den Modus zum Drehen aus. Neustart stellt die Ausgangslage wieder her und löscht Sperren und Zähler.
+help_keys = Pfeile wählen, Leertaste oder Eingabe dreht, L sperrt, P oder Escape pausiert. Fortschritt wird beim Verlassen gespeichert. Neues Spiel bietet 5 × 5, 7 × 7 und 9 × 9.

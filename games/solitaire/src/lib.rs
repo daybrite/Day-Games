@@ -12,11 +12,12 @@
 //! the arrows change the pick. The rules and the solver behind "winnable deals only" live in
 //! model.rs.
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::f64::consts::{PI, TAU};
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_geometry::Affine;
 use day_part_haptics::Haptic;
 use day_pieces::prelude::*;
@@ -1184,7 +1185,7 @@ impl Play {
             }
             if out.suit_done {
                 self.fx.banner = Some(Banner {
-                    text: tr("sol_suit_done").format(),
+                    text: crate::res::str::suit_done().format(),
                     sub: None,
                     big: false,
                     age: 0.0,
@@ -1940,7 +1941,7 @@ impl Play {
                 over: false,
             });
             self.fx.banner = Some(Banner {
-                text: tr("sol_you_win").format(),
+                text: crate::res::str::you_win().format(),
                 sub: None,
                 big: true,
                 age: 0.0,
@@ -2219,7 +2220,7 @@ impl Play {
         let text_y = c.y + h * 0.5 + 26.0;
         outlined_text(
             d,
-            &tr("sol_shuffling").format(),
+            &crate::res::str::shuffling().format(),
             Point::new(c.x, text_y),
             20.0,
             Color::WHITE,
@@ -2229,7 +2230,7 @@ impl Play {
         if s.search.is_some() {
             outlined_text(
                 d,
-                &tr("sol_finding").format(),
+                &crate::res::str::finding().format(),
                 Point::new(c.x, text_y + 24.0),
                 14.0,
                 Color::rgba(1.0, 1.0, 1.0, 0.8),
@@ -2411,8 +2412,8 @@ impl Play {
         let mv = mv.or_else(|| self.model.can_draw().then_some(Move::Draw));
         if lost {
             self.fx.banner = Some(Banner {
-                text: tr("sol_no_line").format(),
-                sub: Some(tr("sol_try_undo").format()),
+                text: crate::res::str::no_line().format(),
+                sub: Some(crate::res::str::try_undo().format()),
                 big: false,
                 age: 0.0,
             });
@@ -2505,15 +2506,15 @@ fn fmt_time(secs: f64) -> String {
 
 fn draw_label(m: DrawMode) -> day_fluent::LocalizedText {
     match m {
-        DrawMode::One => tr("sol_draw_one"),
-        DrawMode::Three => tr("sol_draw_three"),
+        DrawMode::One => crate::res::str::draw_one(),
+        DrawMode::Three => crate::res::str::draw_three(),
     }
 }
 
 fn draw_detail(m: DrawMode) -> day_fluent::LocalizedText {
     match m {
-        DrawMode::One => tr("sol_detail_one"),
-        DrawMode::Three => tr("sol_detail_three"),
+        DrawMode::One => crate::res::str::detail_one(),
+        DrawMode::Three => crate::res::str::detail_three(),
     }
 }
 
@@ -2913,7 +2914,7 @@ pub fn solitaire_page() -> AnyPiece {
             let a = ku.play.borrow_mut().key(&k.key);
             ku.acted(a);
         })
-        .a11y(|a| a.label(tr("sol_table_a11y").format()))
+        .a11y(|a| a.label(crate::res::str::table_a11y().format()))
         .id("sol-canvas")
         .grow()
     };
@@ -2928,7 +2929,7 @@ pub fn solitaire_page() -> AnyPiece {
     };
 
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_solitaire"), "sol-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "sol-pause", move || {
         pu.pause();
         pu.cue(&cues::SELECT);
     });
@@ -3036,7 +3037,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     };
     let (su, tu, mu) = (ui.clone(), ui.clone(), ui.clone());
     let score = stat(
-        tr("gk_score"),
+        gamekit::res::str::score(),
         Box::new(move || {
             su.hud.track();
             (su.play.borrow().fx.shown_score.round() as i64).to_string()
@@ -3045,7 +3046,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
         58.0,
     );
     let time = stat(
-        tr("sol_time"),
+        crate::res::str::time(),
         Box::new(move || {
             tu.hud.track();
             fmt_time(tu.play.borrow().model.elapsed)
@@ -3054,7 +3055,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
         50.0,
     );
     let moves = stat(
-        tr("sol_moves"),
+        crate::res::str::moves(),
         Box::new(move || {
             mu.hud.track();
             mu.play.borrow().model.moves.to_string()
@@ -3070,7 +3071,7 @@ fn tools(ui: Rc<Ui>) -> AnyPiece {
     let hint = tool_button(
         ui.clone(),
         draw_hint_glyph,
-        tr("sol_hint"),
+        crate::res::str::hint(),
         "sol-hint",
         |u| u.play.borrow().live(),
         |u| u.hint(),
@@ -3078,7 +3079,7 @@ fn tools(ui: Rc<Ui>) -> AnyPiece {
     let undo = tool_button(
         ui.clone(),
         draw_undo_glyph,
-        tr("sol_undo"),
+        crate::res::str::undo(),
         "sol-undo",
         |u| {
             let p = u.play.borrow();
@@ -3175,26 +3176,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "sol-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "sol-new-game", move || {
-                u2.pick_draw()
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_settings"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "sol-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "sol-new-game",
+                move || u2.pick_draw(),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
                 chrome::SLATE,
                 "sol-settings",
                 move || u3.show(Overlay::Settings),
             ),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "sol-instructions",
                 move || u4.show(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "sol-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "sol-quit", || {
                 nav_back();
             }),
         ))
@@ -3217,7 +3224,7 @@ fn win_card(ui: Rc<Ui>) -> AnyPiece {
     let record = when(
         move || faster,
         || {
-            label(tr("sol_new_best_time"))
+            label(crate::res::str::new_best_time())
                 .font(Font::Title3)
                 .bold()
                 .color(chrome::GOLD)
@@ -3226,24 +3233,24 @@ fn win_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("sol_you_win"), chrome::GOLD),
+            chrome::card_title(crate::res::str::you_win(), chrome::GOLD),
             row((
                 chrome::stat(
-                    tr("sol_time"),
+                    crate::res::str::time(),
                     fmt_time(elapsed),
                     Font::Title2,
                     Color::WHITE,
                     "sol-final-time",
                 ),
                 chrome::stat(
-                    tr("sol_moves"),
+                    crate::res::str::moves(),
                     moves.to_string(),
                     Font::Title2,
                     Color::WHITE,
                     "sol-final-moves",
                 ),
                 chrome::stat(
-                    tr("gk_score"),
+                    gamekit::res::str::score(),
                     score.to_string(),
                     Font::Title2,
                     chrome::GOLD,
@@ -3253,18 +3260,17 @@ fn win_card(ui: Rc<Ui>) -> AnyPiece {
             .spacing(24.0),
             record,
             chrome::stat(
-                tr("sol_best_time"),
+                crate::res::str::best_time(),
                 fmt_time(best),
                 Font::Title3,
                 Color::WHITE,
                 "sol-best-time",
             ),
-            label(
-                tr("sol_record")
-                    .arg("won", stats.won[i] as f64)
-                    .arg("played", stats.played[i] as f64)
-                    .arg("streak", stats.streak as f64),
-            )
+            label(crate::res::str::record(
+                stats.played[i] as f64,
+                stats.streak as f64,
+                stats.won[i] as f64,
+            ))
             .font(Font::Subheadline)
             .color(chrome::TEXT_DIM)
             .id("sol-record"),
@@ -3273,12 +3279,12 @@ fn win_card(ui: Rc<Ui>) -> AnyPiece {
                 .bold()
                 .color(accent(mode)),
             chrome::menu_button(
-                tr("gk_play_again"),
+                gamekit::res::str::play_again(),
                 chrome::BLUE,
                 "sol-play-again",
                 move || u.pick_draw(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "sol-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "sol-quit", || {
                 nav_back();
             }),
         ))
@@ -3293,21 +3299,26 @@ fn stuck_card(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2) = (ui.clone(), ui);
     chrome::card(
         column((
-            chrome::card_title(tr("sol_stuck_title"), Color::WHITE),
-            label(tr("sol_stuck_message"))
+            chrome::card_title(crate::res::str::stuck_title(), Color::WHITE),
+            label(crate::res::str::stuck_message())
                 .color(chrome::TEXT_DIM)
                 .align(TextAlign::Center),
-            chrome::menu_button(tr("sol_undo"), chrome::GREEN, "sol-stuck-undo", move || {
-                u1.show(Overlay::None);
-                u1.undo();
-            }),
             chrome::menu_button(
-                tr("gk_new_game"),
+                crate::res::str::undo(),
+                chrome::GREEN,
+                "sol-stuck-undo",
+                move || {
+                    u1.show(Overlay::None);
+                    u1.undo();
+                },
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
                 chrome::BLUE,
                 "sol-stuck-new",
                 move || u2.pick_draw(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "sol-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "sol-quit", || {
                 nav_back();
             }),
         ))
@@ -3368,12 +3379,12 @@ fn draw_picker(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            label(tr("sol_choose"))
+            label(crate::res::str::choose())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
             column(PieceVec(cards)).spacing(12.0),
-            button(tr("gk_cancel"))
+            button(gamekit::res::str::cancel())
                 .action(move || {
                     let back = u.return_to.replace(Overlay::None);
                     u.show(back);
@@ -3391,21 +3402,19 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let stats = ui.stats.borrow().clone();
     let line = |m: DrawMode| {
         let i = m.index();
-        let key = match m {
-            DrawMode::One => "sol_stats_one",
-            DrawMode::Three => "sol_stats_three",
+        let summary = match m {
+            DrawMode::One => {
+                crate::res::str::stats_one(stats.played[i] as f64, stats.won[i] as f64)
+            }
+            DrawMode::Three => {
+                crate::res::str::stats_three(stats.played[i] as f64, stats.won[i] as f64)
+            }
         };
         let best = stats.best_time[i]
             .map(fmt_time)
             .unwrap_or_else(|| "—".into());
         row((
-            label(
-                tr(key)
-                    .arg("won", stats.won[i] as f64)
-                    .arg("played", stats.played[i] as f64),
-            )
-            .color(chrome::TEXT)
-            .grow_w(),
+            label(summary).color(chrome::TEXT).grow_w(),
             label(best).tabular().color(chrome::TEXT_DIM),
         ))
         .width(300.0)
@@ -3413,15 +3422,15 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     };
     let reset = {
         let u = ui.clone();
-        button(tr("sol_reset_stats"))
+        button(crate::res::str::reset_stats())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("sol_reset_stats_title"))
-                        .message(tr("sol_reset_stats_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(crate::res::str::reset_stats_title())
+                        .message(crate::res::str::reset_stats_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -3436,29 +3445,32 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_solitaire")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("sol-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("sol-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("sol-vibrations").any(),
             ),
             chrome::setting_row(
-                tr("sol_winnable"),
+                crate::res::str::winnable(),
                 toggle(ui.winnable).id("sol-winnable").any(),
             ),
-            label(tr("sol_winnable_detail"))
+            label(crate::res::str::winnable_detail())
                 .font(Font::Caption)
                 .color(chrome::TEXT_DIM)
                 .width(300.0),
-            chrome::section_heading(tr("sol_statistics")),
+            chrome::section_heading(crate::res::str::statistics()),
             line(DrawMode::One),
             line(DrawMode::Three),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.show(Overlay::Pause))
                 .id("sol-done"),
@@ -3476,21 +3488,21 @@ fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
         p.model.started() && !p.model.won
     };
     chrome::instructions_card(
-        tr("nav_solitaire"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("sol_help_intro")),
-            Help::Heading(tr("sol_help_play")),
-            Help::Para(tr("sol_help_play_1")),
-            Help::Para(tr("sol_help_play_2")),
-            Help::Para(tr("sol_help_play_3")),
-            Help::Para(tr("sol_help_play_4")),
-            Help::Heading(tr("sol_help_score")),
-            Help::Para(tr("sol_help_score_1")),
-            Help::Para(tr("sol_help_score_2")),
-            Help::Heading(tr("sol_help_winnable")),
-            Help::Para(tr("sol_help_winnable_1")),
-            Help::Heading(tr("sol_help_keys")),
-            Help::Para(tr("sol_help_keys_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Para(crate::res::str::help_play_4()),
+            Help::Heading(crate::res::str::help_score()),
+            Help::Para(crate::res::str::help_score_1()),
+            Help::Para(crate::res::str::help_score_2()),
+            Help::Heading(crate::res::str::help_winnable()),
+            Help::Para(crate::res::str::help_winnable_1()),
+            Help::Heading(crate::res::str::help_keys()),
+            Help::Para(crate::res::str::help_keys_1()),
         ],
         "sol-help-done",
         move || ui.show(if live { Overlay::Pause } else { Overlay::None }),

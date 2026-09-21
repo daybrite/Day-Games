@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = 一時停止
+resume = 再開
+new_game = 新しいゲーム
+settings = 設定
+instructions = 遊び方
+quit = ゲーム終了
+play_again = もう一度遊ぶ
+game_over = ゲームオーバー
+score = スコア
+best = ベスト
+new_high_score = ハイスコア更新！
+sounds = 効果音
+vibrations = 振動
+data = データ
+cancel = キャンセル
+reset_high_score = ハイスコアをリセット
+reset_high_score_title = ハイスコアをリセットしますか？
+reset_high_score_message = ハイスコアを永久にゼロに戻します。
+reset_confirm = リセット
+game_over_heading = ゲーム終了

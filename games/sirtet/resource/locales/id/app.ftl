@@ -1,0 +1,22 @@
+# sirtet — private crate catalog.
+game_title = Sirtet
+level = Level
+lines = Baris
+next = Berikutnya
+next_a11y = Balok berikutnya
+game_over = Permainan berakhir
+clear_single = SATU
+clear_double = DUA
+clear_triple = TIGA
+clear_sirtet = SIRTET!
+help_intro = Susun balok jatuh dan lengkapi baris sebelum arena penuh.
+help_play = Cara bermain
+help_play_1 = • **Seret ke kiri atau kanan** untuk menggerakkan balok, atau gunakan tombol panah.
+help_play_2 = • **Ketuk** untuk memutar balok.
+help_play_3 = • **Seret ke bawah** untuk mempercepat jatuhnya balok.
+help_lines = Menghapus baris
+help_lines_1 = • Penuhi satu baris mendatar untuk menghapusnya.
+help_lines_2 = • Menghapus **beberapa baris sekaligus** memberi bonus. Empat baris memberi nilai tertinggi.
+help_levels = Level dan kecepatan
+help_levels_1 = Menghapus baris menaikkan level dan mempercepat balok.
+help_over_1 = Permainan berakhir jika balok baru tidak bisa masuk.

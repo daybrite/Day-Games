@@ -22,6 +22,7 @@ fn name_of(path: &Path) -> String {
 }
 
 fn main() {
+    day_build::generate_locales().expect("crate localization codegen");
     let root =
         PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("cargo sets this")).join("words");
     println!("cargo:rerun-if-changed=words");

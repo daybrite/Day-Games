@@ -1,1 +1,1 @@
-solitaire,cards,breakout,sudoku,2048,puzzle,blocks,arcade,offline,no ads,charades,party,mines
+solitaire,sudoku,2048,charades,mines,reversi,pipes,blocks,cards,arcade,offline

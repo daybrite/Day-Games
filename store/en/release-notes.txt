@@ -1,1 +1,1 @@
-First public release. Solitaire, Block Blast, Breakout, falling blocks, Sudoku and 2048, each saving and restoring your game automatically.
+Ten classic games, with localized menus, instructions and accessibility labels.

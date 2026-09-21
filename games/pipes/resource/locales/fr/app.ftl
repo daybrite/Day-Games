@@ -1,0 +1,26 @@
+# pipes — private crate catalog.
+game_title = Tuyaux
+moves = Rotations
+connected = Connectés
+goal = Reliez chaque tuyau à la source dorée.
+solved = Tout est connecté !
+lock_mode = Mode verrouillage
+locked = Verrouillé
+unlocked = Déverrouillé
+north = haut
+east = droite
+south = bas
+west = gauche
+selection = Ligne { $row }, colonne { $column } : { $ports }. { $state }.
+board_a11y = Grille des Tuyaux. Les flèches sélectionnent, Entrée fait pivoter et L verrouille ou déverrouille.
+size = Taille de la grille
+small = 5 × 5
+medium = 7 × 7
+large = 9 × 9
+start = Commencer le puzzle
+restart = Recommencer le puzzle
+best = Moins de rotations · cette taille
+help_goal = Faites pivoter les cases pour relier tous les tuyaux à la source dorée centrale. Les tuyaux connectés deviennent turquoise. Chaque extrémité doit rejoindre un tuyau, sans sortir de la grille.
+help_controls = Touchez une case pour la tourner d'un quart de tour horaire. Embouts, coudes, lignes et branches forment un seul réseau. Chaque puzzle possède une solution ; une vague de lumière célèbre la connexion complète.
+help_locks = Activez le mode verrouillage puis touchez les cases à protéger ou libérer. Un cadenas bloque leur rotation. Désactivez ce mode pour tourner à nouveau. Recommencer rétablit le mélange initial et efface verrous et compteur.
+help_keys = Au clavier : flèches pour choisir, Espace ou Entrée pour tourner, L pour verrouiller, P ou Échap pour la pause. La progression se sauvegarde en quittant. Choisissez 5 × 5, 7 × 7 ou 9 × 9 dans Nouvelle partie.

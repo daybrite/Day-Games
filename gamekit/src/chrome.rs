@@ -418,7 +418,7 @@ pub fn close_button() -> AnyPiece {
     })
     .on_tap(crate::close)
     .a11y(|a| {
-        a.label(day_fluent::tr("gk_close").format())
+        a.label(crate::res::chrome::str::close().format())
             .role(Role::Button)
     })
     // The id every dayscript taps to leave a game.
@@ -439,7 +439,7 @@ pub fn game_header(
     row((
         close_button(),
         fitted_title(title, TITLE, FontWeight::Heavy, ink_at(0.85)).grow_w(),
-        pause_button(day_fluent::tr("gk_pause"), pause_id, on_pause),
+        pause_button(crate::res::chrome::str::pause(), pause_id, on_pause),
     ))
     .align(VAlign::Center)
     .padding(EDGE)
@@ -645,7 +645,7 @@ pub fn instructions_card(
                 column(PieceVec(pieces))
                     .spacing(10.0)
                     .align(HAlign::Leading),
-                button(day_fluent::tr("gk_done"))
+                button(crate::res::chrome::str::done())
                     .prominent()
                     .action(on_done)
                     .id(done_id),

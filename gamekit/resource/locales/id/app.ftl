@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = DIJEDA
+resume = Lanjutkan
+new_game = Permainan Baru
+settings = Pengaturan
+instructions = Petunjuk
+quit = Keluar Permainan
+play_again = Main Lagi
+game_over = PERMAINAN BERAKHIR
+score = Skor
+best = Terbaik
+new_high_score = Skor Tertinggi Baru!
+sounds = Suara
+vibrations = Getaran
+data = Data
+cancel = Batal
+reset_high_score = Reset Skor Tertinggi
+reset_high_score_title = Reset skor tertinggi?
+reset_high_score_message = Skor tertinggi akan direset ke nol secara permanen.
+reset_confirm = Atur Ulang
+game_over_heading = Permainan berakhir

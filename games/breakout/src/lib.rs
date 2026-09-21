@@ -6,10 +6,11 @@
 //! how-to-play sheet. A composite Day piece: pure composition over `day_pieces` plus the
 //! shared `gamekit` chrome, so it renders the same on every backend.
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_part_haptics::Haptic;
 use day_pieces::prelude::*;
 use day_spec::Cursor;
@@ -1225,7 +1226,7 @@ impl Game {
         // Launch prompt.
         if !self.launched && !self.game_over && !self.level_complete {
             d.text(
-                &tr("bk_tap_to_launch").format(),
+                &crate::res::str::tap_to_launch().format(),
                 Point::new(w / 2.0, h / 2.0 - 10.0),
                 TextStyle {
                     size: 17.0,
@@ -1235,7 +1236,7 @@ impl Game {
                 },
             );
             d.text(
-                &tr("bk_drag_to_move").format(),
+                &crate::res::str::drag_to_move().format(),
                 Point::new(w / 2.0, h / 2.0 + 14.0),
                 TextStyle {
                     size: 12.0,
@@ -1854,7 +1855,7 @@ pub fn breakout_page() -> AnyPiece {
     };
 
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_breakout"), "bk-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "bk-pause", move || {
         pu.pause();
         pu.cue(&cues::SELECT);
     });
@@ -1874,7 +1875,7 @@ pub fn breakout_page() -> AnyPiece {
 fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     let (su, vu, lu) = (ui.clone(), ui.clone(), ui.clone());
     let score = chrome::info_stat(
-        tr("gk_score"),
+        gamekit::res::str::score(),
         move || {
             su.hud.track();
             su.game.borrow().score.to_string()
@@ -1885,7 +1886,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .min_width(88.0)
     .any();
     let lives = column((
-        label(tr("bk_lives"))
+        label(crate::res::str::lives())
             .font(Font::Caption)
             .color(chrome::TEXT_DIM),
         canvas(move |d, sz| {
@@ -1905,7 +1906,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
                 );
             }
         })
-        .a11y(|a| a.label(tr("bk_lives").format()))
+        .a11y(|a| a.label(crate::res::str::lives().format()))
         .id("bk-lives")
         .frame(62.0, 22.0),
     ))
@@ -1913,7 +1914,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .align(HAlign::Center)
     .any();
     let level = chrome::info_stat(
-        tr("bk_level_caption"),
+        crate::res::str::level_caption(),
         move || {
             lu.hud.track();
             lu.game.borrow().level.to_string()
@@ -2010,23 +2011,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "bk-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "bk-new-game", move || {
-                u2.new_game()
-            }),
-            chrome::menu_button(tr("gk_settings"), chrome::SLATE, "bk-settings", move || {
-                u3.show(Overlay::Settings)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "bk-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "bk-new-game",
+                move || u2.new_game(),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
+                chrome::SLATE,
+                "bk-settings",
+                move || u3.show(Overlay::Settings),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "bk-instructions",
                 move || u4.show(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "bk-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "bk-quit", || {
                 nav_back();
             }),
         ))
@@ -2045,16 +2055,16 @@ fn level_complete_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("bk_level_clear").arg("n", level as i64), chrome::GOLD),
+            chrome::card_title(crate::res::str::level_clear(level as i64), chrome::GOLD),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::LargeTitle,
                 Color::WHITE,
                 "bk-clear-score",
             ),
             chrome::menu_button(
-                tr("bk_next_level"),
+                crate::res::str::next_level(),
                 chrome::GREEN,
                 "bk-next-level",
                 move || {
@@ -2081,7 +2091,7 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let record = when(
         move || score >= best && score > 0,
         || {
-            label(tr("gk_new_high_score"))
+            label(gamekit::res::str::new_high_score())
                 .font(Font::Title3)
                 .bold()
                 .color(chrome::GOLD)
@@ -2090,9 +2100,9 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("gk_game_over"), Color::WHITE),
+            chrome::card_title(gamekit::res::str::game_over(), Color::WHITE),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::LargeTitle,
                 chrome::GOLD,
@@ -2100,14 +2110,14 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
             ),
             row((
                 chrome::stat(
-                    tr("bk_level_caption"),
+                    crate::res::str::level_caption(),
                     level.to_string(),
                     Font::Title3,
                     Color::WHITE,
                     "bk-final-level",
                 ),
                 chrome::stat(
-                    tr("gk_best"),
+                    gamekit::res::str::best(),
                     best.to_string(),
                     Font::Title3,
                     Color::WHITE,
@@ -2117,12 +2127,12 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
             .spacing(24.0),
             record,
             chrome::menu_button(
-                tr("gk_play_again"),
+                gamekit::res::str::play_again(),
                 chrome::BLUE,
                 "bk-play-again",
                 move || u.new_game(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "bk-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "bk-quit", || {
                 nav_back();
             }),
         ))
@@ -2136,15 +2146,15 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
 fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let reset = {
         let u = ui.clone();
-        button(tr("gk_reset_high_score"))
+        button(gamekit::res::str::reset_high_score())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("gk_reset_high_score_title"))
-                        .message(tr("gk_reset_high_score_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(gamekit::res::str::reset_high_score_title())
+                        .message(gamekit::res::str::reset_high_score_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -2159,19 +2169,22 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_breakout")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("bk-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("bk-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("bk-vibrations").any(),
             ),
-            chrome::section_heading(tr("gk_data")),
+            chrome::section_heading(gamekit::res::str::data()),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.show(Overlay::Pause))
                 .id("bk-done"),
@@ -2187,17 +2200,17 @@ fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     // Done returns to the pause menu when the game is paused, else to the board.
     let live = ui.game.borrow().live();
     chrome::instructions_card(
-        tr("nav_breakout"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("bk_help_intro")),
-            Help::Heading(tr("bk_help_play")),
-            Help::Para(tr("bk_help_play_1")),
-            Help::Para(tr("bk_help_play_2")),
-            Help::Para(tr("bk_help_play_3")),
-            Help::Heading(tr("bk_help_powerups")),
-            Help::Para(tr("bk_help_powerups_1")),
-            Help::Heading(tr("bk_help_lives")),
-            Help::Para(tr("bk_help_lives_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Heading(crate::res::str::help_powerups()),
+            Help::Para(crate::res::str::help_powerups_1()),
+            Help::Heading(crate::res::str::help_lives()),
+            Help::Para(crate::res::str::help_lives_1()),
         ],
         "bk-help-done",
         move || ui.show(if live { Overlay::Pause } else { Overlay::None }),

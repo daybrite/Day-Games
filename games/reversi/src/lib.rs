@@ -1,5 +1,6 @@
 //! Reversi: shared canvas drawing, pure rules, and the standard gamekit shell.
-use day_fluent::tr;
+day_fluent::locales!();
+
 use day_pieces::prelude::*;
 use gamekit::chrome::{self, Feedback, Help, Sfx, cues, sfx};
 use serde::{Deserialize, Serialize};
@@ -166,19 +167,20 @@ impl Ui {
         let i = self.cursor.get();
         let b = self.game.borrow().board;
         let state = if b.black & (1 << i) != 0 {
-            tr("rv_black")
+            crate::res::str::black()
         } else if b.white & (1 << i) != 0 {
-            tr("rv_white")
+            crate::res::str::white()
         } else if b.flips(i, b.turn) != 0 {
-            tr("rv_legal")
+            crate::res::str::legal()
         } else {
-            tr("rv_empty")
+            crate::res::str::empty()
         };
-        tr("rv_selection")
-            .arg("column", ((b'A' + (i % 8) as u8) as char).to_string())
-            .arg("row", (i / 8 + 1) as f64)
-            .arg("state", state.format())
-            .format()
+        crate::res::str::selection(
+            ((b'A' + (i % 8) as u8) as char).to_string(),
+            (i / 8 + 1) as f64,
+            state.format(),
+        )
+        .format()
     }
     fn status(&self) -> String {
         self.repaint.track();
@@ -187,14 +189,14 @@ impl Ui {
             return result(b).format();
         }
         let turn = if !self.human_turn() {
-            tr("rv_thinking")
+            crate::res::str::thinking()
         } else if b.turn {
-            tr("rv_black_turn")
+            crate::res::str::black_turn()
         } else {
-            tr("rv_white_turn")
+            crate::res::str::white_turn()
         };
         if self.passed.get() {
-            tr("rv_passed").arg("turn", turn.format()).format()
+            crate::res::str::passed(turn.format()).format()
         } else {
             turn.format()
         }
@@ -202,9 +204,9 @@ impl Ui {
 }
 fn result(b: Board) -> day_fluent::LocalizedText {
     match b.count(true).cmp(&b.count(false)) {
-        std::cmp::Ordering::Greater => tr("rv_black_wins"),
-        std::cmp::Ordering::Less => tr("rv_white_wins"),
-        std::cmp::Ordering::Equal => tr("rv_draw"),
+        std::cmp::Ordering::Greater => crate::res::str::black_wins(),
+        std::cmp::Ordering::Less => crate::res::str::white_wins(),
+        std::cmp::Ordering::Equal => crate::res::str::draw(),
     }
 }
 
@@ -260,11 +262,11 @@ pub fn reversi_page() -> AnyPiece {
         ui.push(Overlay::Help);
     }
     let (p, s, b, w) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
-    let header = chrome::game_header(tr("nav_reversi"), "rv-pause", move || p.pause());
+    let header = chrome::game_header(crate::res::str::game_title(), "rv-pause", move || p.pause());
     let info = column((
         chrome::info_row(vec![
             chrome::info_stat(
-                tr("rv_black"),
+                crate::res::str::black(),
                 move || {
                     b.repaint.track();
                     b.game.borrow().board.count(true).to_string()
@@ -275,7 +277,7 @@ pub fn reversi_page() -> AnyPiece {
             .min_width(72.0)
             .any(),
             chrome::info_stat(
-                tr("rv_white"),
+                crate::res::str::white(),
                 move || {
                     w.repaint.track();
                     w.game.borrow().board.count(false).to_string()
@@ -302,7 +304,7 @@ pub fn reversi_page() -> AnyPiece {
             .color(chrome::TEXT)
             .align(TextAlign::Center)
             .id("rv-selection"),
-        label(tr("rv_board_hint"))
+        label(crate::res::str::board_hint())
             .font(Font::Caption)
             .color(chrome::TEXT_DIM)
             .align(TextAlign::Center),
@@ -358,7 +360,7 @@ fn board_canvas(ui: Rc<Ui>) -> AnyPiece {
     })
     .on_key(move |event| k.key(&event.key))
     .focused(ui.focus)
-    .a11y(|a| a.label(tr("rv_board_a11y").format()))
+    .a11y(|a| a.label(crate::res::str::board_a11y().format()))
     .id("rv-board")
     .grow()
     .any()
@@ -513,12 +515,12 @@ fn overlays(ui: Rc<Ui>) -> AnyPiece {
 fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
     if kind == Overlay::Help {
         return chrome::instructions_card(
-            tr("nav_reversi"),
+            crate::res::str::game_title(),
             vec![
-                Help::Para(tr("rv_help_rules")),
-                Help::Para(tr("rv_help_pass")),
-                Help::Para(tr("rv_help_solo")),
-                Help::Para(tr("rv_help_keys")),
+                Help::Para(crate::res::str::help_rules()),
+                Help::Para(crate::res::str::help_pass()),
+                Help::Para(crate::res::str::help_solo()),
+                Help::Para(crate::res::str::help_keys()),
             ],
             "rv-help-done",
             move || ui.pop(),
@@ -527,40 +529,44 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
         .any();
     }
     let mut items: Vec<AnyPiece> = Vec::new();
-    let action = |key: &'static str, id: &'static str, tint: Color, overlay: Overlay| {
-        let u = ui.clone();
-        chrome::menu_button(tr(key), tint, id, move || u.push(overlay))
-    };
+    let action =
+        |title: day_fluent::LocalizedText, id: &'static str, tint: Color, overlay: Overlay| {
+            let u = ui.clone();
+            chrome::menu_button(title, tint, id, move || u.push(overlay))
+        };
     match kind {
         Overlay::Pause => {
-            items.push(chrome::card_title(tr("gk_paused"), Color::WHITE));
+            items.push(chrome::card_title(
+                gamekit::res::str::paused(),
+                Color::WHITE,
+            ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_resume"),
+                gamekit::res::str::resume(),
                 chrome::GREEN,
                 "rv-resume",
                 move || u.show(Overlay::None),
             ));
             items.push(action(
-                "gk_new_game",
+                gamekit::res::str::new_game(),
                 "rv-new-game",
                 chrome::BLUE,
                 Overlay::NewGame,
             ));
             items.push(action(
-                "gk_settings",
+                gamekit::res::str::settings(),
                 "rv-settings",
                 chrome::SLATE,
                 Overlay::Settings,
             ));
             items.push(action(
-                "gk_instructions",
+                gamekit::res::str::instructions(),
                 "rv-instructions",
                 chrome::INDIGO,
                 Overlay::Help,
             ));
             items.push(chrome::menu_button(
-                tr("gk_quit"),
+                gamekit::res::str::quit(),
                 chrome::RED,
                 "rv-quit",
                 || {
@@ -569,24 +575,34 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
             ));
         }
         Overlay::NewGame => {
-            items.push(chrome::card_title(tr("gk_new_game"), Color::WHITE));
-            items.push(label(tr("rv_mode")).color(chrome::TEXT).any());
+            items.push(chrome::card_title(
+                gamekit::res::str::new_game(),
+                Color::WHITE,
+            ));
+            items.push(label(crate::res::str::mode()).color(chrome::TEXT).any());
             items.push(
                 picker(
-                    vec![tr("rv_solo").format(), tr("rv_two_players").format()],
+                    vec![
+                        crate::res::str::solo().format(),
+                        crate::res::str::two_players().format(),
+                    ],
                     ui.mode,
                 )
                 .segmented()
                 .id("rv-mode")
                 .any(),
             );
-            items.push(label(tr("rv_difficulty")).color(chrome::TEXT).any());
+            items.push(
+                label(crate::res::str::difficulty())
+                    .color(chrome::TEXT)
+                    .any(),
+            );
             items.push(
                 picker(
                     vec![
-                        tr("rv_easy").format(),
-                        tr("rv_medium").format(),
-                        tr("rv_hard").format(),
+                        crate::res::str::easy().format(),
+                        crate::res::str::medium().format(),
+                        crate::res::str::hard().format(),
                     ],
                     ui.difficulty,
                 )
@@ -596,32 +612,35 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
             );
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("rv_start"),
+                crate::res::str::start(),
                 chrome::GREEN,
                 "rv-start",
                 move || u.start(),
             ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_cancel"),
+                gamekit::res::str::cancel(),
                 chrome::SLATE,
                 "rv-cancel",
                 move || u.pop(),
             ));
         }
         Overlay::Settings => {
-            items.push(chrome::card_title(tr("gk_settings"), Color::WHITE));
+            items.push(chrome::card_title(
+                gamekit::res::str::settings(),
+                Color::WHITE,
+            ));
             items.push(chrome::setting_row(
-                tr("gk_sounds"),
+                gamekit::res::str::sounds(),
                 toggle(ui.sounds).id("rv-sounds").any(),
             ));
             items.push(chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("rv-vibrations").any(),
             ));
             let u = ui.clone();
             items.push(chrome::menu_button(
-                tr("gk_done"),
+                gamekit::res::chrome::str::done(),
                 chrome::GREEN,
                 "rv-done",
                 move || u.pop(),
@@ -631,23 +650,22 @@ fn overlay_card(ui: Rc<Ui>, kind: Overlay) -> AnyPiece {
             let b = ui.game.borrow().board;
             items.push(chrome::card_title(result(b), chrome::GOLD));
             items.push(
-                label(
-                    tr("rv_final_score")
-                        .arg("black", f64::from(b.count(true)))
-                        .arg("white", f64::from(b.count(false))),
-                )
+                label(crate::res::str::final_score(
+                    f64::from(b.count(true)),
+                    f64::from(b.count(false)),
+                ))
                 .color(chrome::TEXT)
                 .id("rv-result-score")
                 .any(),
             );
             items.push(action(
-                "gk_new_game",
+                gamekit::res::str::new_game(),
                 "rv-play-again",
                 chrome::GREEN,
                 Overlay::NewGame,
             ));
             items.push(chrome::menu_button(
-                tr("gk_quit"),
+                gamekit::res::str::quit(),
                 chrome::SLATE,
                 "rv-result-quit",
                 || {

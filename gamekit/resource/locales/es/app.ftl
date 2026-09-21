@@ -1,0 +1,21 @@
+# gamekit — private crate catalog.
+paused = PAUSADO
+resume = Continuar
+new_game = Partida nueva
+settings = Configuración
+instructions = Instrucciones
+quit = Salir del juego
+play_again = Jugar otra vez
+game_over = FIN DEL JUEGO
+score = Puntuación
+best = Mejor
+new_high_score = ¡Nueva mejor puntuación!
+sounds = Sonidos
+vibrations = Vibraciones
+data = Datos
+cancel = Cancelar
+reset_high_score = Restablecer puntuación
+reset_high_score_title = ¿Restablecer récord?
+reset_high_score_message = El récord se restablecerá a cero de forma permanente.
+reset_confirm = Restablecer
+game_over_heading = Fin de la partida

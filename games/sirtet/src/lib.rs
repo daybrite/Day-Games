@@ -2,10 +2,11 @@
 //! clock (§8.4). A composite Day piece: pure composition over `day_pieces`. Tap rotates, horizontal
 //! drag shifts, downward drag soft-drops.
 
+day_fluent::locales!();
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_pieces::prelude::*;
 use gamekit::chrome::cues::{self, with};
 use gamekit::chrome::{self, Cue, Feedback, Help, Sfx, sfx};
@@ -486,10 +487,10 @@ impl Game {
         // blue, fading out over its last third above the bottom of the well.
         if let Some((n, life)) = self.clear_popup {
             let text = match n {
-                1 => tr("st_clear_single"),
-                2 => tr("st_clear_double"),
-                3 => tr("st_clear_triple"),
-                _ => tr("st_clear_sirtet"),
+                1 => crate::res::str::clear_single(),
+                2 => crate::res::str::clear_double(),
+                3 => crate::res::str::clear_triple(),
+                _ => crate::res::str::clear_sirtet(),
             }
             .format();
             let a = (life / (CLEAR_POPUP_LIFE / 3.0)).clamp(0.0, 1.0);
@@ -532,7 +533,7 @@ impl Game {
                 Color::rgba(0.0, 0.0, 0.05, 0.6),
             );
             d.text(
-                &tr("st_game_over").format(),
+                &crate::res::str::game_over().format(),
                 Point::new(sz.width / 2.0, sz.height / 2.0 - 16.0),
                 TextStyle {
                     size: 32.0,
@@ -803,7 +804,7 @@ pub fn sirtet_page() -> AnyPiece {
         )
     };
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_sirtet"), "st-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "st-pause", move || {
         pu.pause();
         pu.cue(&cues::SELECT);
     });
@@ -820,7 +821,7 @@ pub fn sirtet_page() -> AnyPiece {
 fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     let (su, lu, nu, pu) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     let score = chrome::info_stat(
-        tr("gk_score"),
+        gamekit::res::str::score(),
         move || {
             su.repaint.track();
             su.game.borrow().score.to_string()
@@ -831,7 +832,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     .min_width(72.0)
     .any();
     let level = chrome::info_stat(
-        tr("st_level"),
+        crate::res::str::level(),
         move || {
             lu.repaint.track();
             lu.game.borrow().level().to_string()
@@ -841,7 +842,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     )
     .any();
     let lines = chrome::info_stat(
-        tr("st_lines"),
+        crate::res::str::lines(),
         move || {
             nu.repaint.track();
             nu.game.borrow().lines.to_string()
@@ -853,7 +854,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
     // The preview is the fourth readout, captioned like the three beside it so it sits on the
     // same baseline and takes an equal share of the row instead of hanging off its end.
     let next = column((
-        label(tr("st_next"))
+        label(crate::res::str::next())
             .font(Font::Caption)
             .color(chrome::TEXT_DIM),
         canvas(move |d, sz| {
@@ -870,7 +871,7 @@ fn info_bar(ui: Rc<Ui>) -> AnyPiece {
                 );
             }
         })
-        .a11y(|a| a.label(tr("st_next_a11y").format()))
+        .a11y(|a| a.label(crate::res::str::next_a11y().format()))
         .id("st-next")
         .frame(64.0, 28.0),
     ))
@@ -937,23 +938,32 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui.clone());
     chrome::card(
         column((
-            chrome::card_title(tr("gk_paused"), Color::WHITE),
-            chrome::menu_button(tr("gk_resume"), chrome::GREEN, "st-resume", move || {
-                u1.show(Overlay::None)
-            }),
-            chrome::menu_button(tr("gk_new_game"), chrome::BLUE, "st-new-game", move || {
-                u2.new_game()
-            }),
-            chrome::menu_button(tr("gk_settings"), chrome::SLATE, "st-settings", move || {
-                u3.show(Overlay::Settings)
-            }),
+            chrome::card_title(gamekit::res::str::paused(), Color::WHITE),
             chrome::menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::resume(),
+                chrome::GREEN,
+                "st-resume",
+                move || u1.show(Overlay::None),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::new_game(),
+                chrome::BLUE,
+                "st-new-game",
+                move || u2.new_game(),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::settings(),
+                chrome::SLATE,
+                "st-settings",
+                move || u3.show(Overlay::Settings),
+            ),
+            chrome::menu_button(
+                gamekit::res::str::instructions(),
                 chrome::INDIGO,
                 "st-instructions",
                 move || u4.show(Overlay::Instructions),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "st-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "st-quit", || {
                 nav_back();
             }),
         ))
@@ -972,7 +982,7 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let record = when(
         move || score >= best && score > 0,
         || {
-            label(tr("gk_new_high_score"))
+            label(gamekit::res::str::new_high_score())
                 .font(Font::Title3)
                 .bold()
                 .color(chrome::GOLD)
@@ -981,9 +991,9 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     chrome::card(
         column((
-            chrome::card_title(tr("gk_game_over"), Color::WHITE),
+            chrome::card_title(gamekit::res::str::game_over(), Color::WHITE),
             chrome::stat(
-                tr("gk_score"),
+                gamekit::res::str::score(),
                 score.to_string(),
                 Font::LargeTitle,
                 chrome::GOLD,
@@ -991,21 +1001,21 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
             ),
             row((
                 chrome::stat(
-                    tr("st_level"),
+                    crate::res::str::level(),
                     level.to_string(),
                     Font::Title3,
                     Color::WHITE,
                     "st-final-level",
                 ),
                 chrome::stat(
-                    tr("st_lines"),
+                    crate::res::str::lines(),
                     lines.to_string(),
                     Font::Title3,
                     Color::WHITE,
                     "st-final-lines",
                 ),
                 chrome::stat(
-                    tr("gk_best"),
+                    gamekit::res::str::best(),
                     best.to_string(),
                     Font::Title3,
                     Color::WHITE,
@@ -1015,12 +1025,12 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
             .spacing(24.0),
             record,
             chrome::menu_button(
-                tr("gk_play_again"),
+                gamekit::res::str::play_again(),
                 chrome::BLUE,
                 "st-play-again",
                 move || u.new_game(),
             ),
-            chrome::menu_button(tr("gk_quit"), chrome::RED, "st-quit", || {
+            chrome::menu_button(gamekit::res::str::quit(), chrome::RED, "st-quit", || {
                 nav_back();
             }),
         ))
@@ -1034,15 +1044,15 @@ fn game_over_card(ui: Rc<Ui>) -> AnyPiece {
 fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let reset = {
         let u = ui.clone();
-        button(tr("gk_reset_high_score"))
+        button(gamekit::res::str::reset_high_score())
             .tint(chrome::RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("gk_reset_high_score_title"))
-                        .message(tr("gk_reset_high_score_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(gamekit::res::str::reset_high_score_title())
+                        .message(gamekit::res::str::reset_high_score_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1057,19 +1067,22 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let done = ui.clone();
     chrome::card(
         column((
-            label(tr("gk_settings"))
+            label(gamekit::res::str::settings())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
-            chrome::section_heading(tr("nav_sirtet")),
-            chrome::setting_row(tr("gk_sounds"), toggle(ui.sounds).id("st-sounds").any()),
+            chrome::section_heading(crate::res::str::game_title()),
             chrome::setting_row(
-                tr("gk_vibrations"),
+                gamekit::res::str::sounds(),
+                toggle(ui.sounds).id("st-sounds").any(),
+            ),
+            chrome::setting_row(
+                gamekit::res::str::vibrations(),
                 toggle(ui.vibrations).id("st-vibrations").any(),
             ),
-            chrome::section_heading(tr("gk_data")),
+            chrome::section_heading(gamekit::res::str::data()),
             reset,
-            button(tr("gk_done"))
+            button(gamekit::res::chrome::str::done())
                 .prominent()
                 .action(move || done.show(Overlay::Pause))
                 .id("st-done"),
@@ -1084,20 +1097,20 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
 fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     let live = ui.game.borrow().score > 0 && !ui.game.borrow().game_over;
     chrome::instructions_card(
-        tr("nav_sirtet"),
+        crate::res::str::game_title(),
         vec![
-            Help::Para(tr("st_help_intro")),
-            Help::Heading(tr("st_help_play")),
-            Help::Para(tr("st_help_play_1")),
-            Help::Para(tr("st_help_play_2")),
-            Help::Para(tr("st_help_play_3")),
-            Help::Heading(tr("st_help_lines")),
-            Help::Para(tr("st_help_lines_1")),
-            Help::Para(tr("st_help_lines_2")),
-            Help::Heading(tr("st_help_levels")),
-            Help::Para(tr("st_help_levels_1")),
-            Help::Heading(tr("gk_game_over_heading")),
-            Help::Para(tr("st_help_over_1")),
+            Help::Para(crate::res::str::help_intro()),
+            Help::Heading(crate::res::str::help_play()),
+            Help::Para(crate::res::str::help_play_1()),
+            Help::Para(crate::res::str::help_play_2()),
+            Help::Para(crate::res::str::help_play_3()),
+            Help::Heading(crate::res::str::help_lines()),
+            Help::Para(crate::res::str::help_lines_1()),
+            Help::Para(crate::res::str::help_lines_2()),
+            Help::Heading(crate::res::str::help_levels()),
+            Help::Para(crate::res::str::help_levels_1()),
+            Help::Heading(gamekit::res::str::game_over_heading()),
+            Help::Para(crate::res::str::help_over_1()),
         ],
         "st-help-done",
         move || ui.show(if live { Overlay::Pause } else { Overlay::None }),

@@ -14,7 +14,15 @@ permissions:
   id-token: write # deploy-pages OIDC token (deploy-web)
 
 jobs:
+  localization:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check app, store, website and screenshot locale coverage
+        run: python3 scripts/check-locales.py
+
   app:
+    needs: localization
     uses: daybrite/actions/.github/workflows/dayapp.yml@main
     secrets: inherit
     with:
@@ -27,6 +35,8 @@ jobs:
       # target, and games.yaml sweeps every game for the screenshots the website's gallery
       # publishes (bk.yaml is a local Breakout sweep).
       scripts: dayscript/smoke.yaml dayscript/games.yaml dayscript/reversi.yaml dayscript/pipes.yaml
+      # Run every dayscript in every supported language, including RTL Arabic.
+      locales: en ar de es fr hi id it ja ko pt-BR ru zh-CN
       # Pins every game's RNG so a scripted run meets the same puzzle and layout everywhere.
       launch-env: DAY_GAMES_SEED=15
       # website/site.toml makes the workflow build and deploy the full project site

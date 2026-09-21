@@ -56,14 +56,20 @@ people differ between cultures. So:
    native list, and add decks that only make sense in that language under a new id.
 3. **Titles.** Put each deck's title and blurb in that language in its header. The rest of the
    game's text (buttons, rules, results) is translated in the Fluent catalogs under
-   `resource/locales/<tag>/app.ftl`, as for every other game.
+   `games/charades/resource/locales/<tag>/app.ftl` (relative to the app root), using
+   Charades' own generated `res::str` accessors, as for every other game.
 4. **Check.** Run `cargo test -p charades`, then play a round with the app set to that language.
 
 The game picks its word lists from the app's language as it opens a deck: the exact tag, then the
-language alone (`fr-CA` uses `fr-CA/`, then `fr/`), then English. A player whose language has no
-lists yet plays in English.
+language alone (`fr-CA` uses `fr-CA/`, then `fr/`), then English. Chinese script/region tags such as `zh-Hans-CN` use the `zh-CN` lists. A player whose
+language has no lists yet plays in English.
 
-Later, as lists are added:
+The current collection includes animal and food decks in Arabic, German, Spanish, French,
+Hindi, Indonesian, Italian, Japanese, Korean, Brazilian Portuguese, Russian and Simplified
+Chinese. Each has at least 100 prompts and its own title and blurb. English retains all 21
+themes; translated players see their language's two decks, without English prompts mixed in.
+
+Possible future extensions:
 
 - **Choosing a word list.** When more than one language is available, Settings will offer the
   word-list language separately from the app's, for mixed-language groups and learners.

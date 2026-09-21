@@ -9,10 +9,11 @@
 //! arrows; every canvas on the page hears the same keys. All user-facing strings resolve
 //! through Fluent (`tr`, resource/locales/*/app.ftl).
 
+day_fluent::locales!();
+
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
-use day_fluent::tr;
 use day_pieces::prelude::*;
 use day_spec::{KeyEvent, LineCap, LineJoin, StrokeStyle};
 use gamekit::chrome::cues::{self, with};
@@ -87,20 +88,20 @@ fn accent(d: Difficulty) -> Color {
 /// The difficulty display names, as literal `tr` keys so `day lint` tracks their coverage.
 fn difficulty_label(d: Difficulty) -> day_fluent::LocalizedText {
     match d {
-        Difficulty::Easy => tr("su_easy"),
-        Difficulty::Medium => tr("su_medium"),
-        Difficulty::Hard => tr("su_hard"),
-        Difficulty::Expert => tr("su_expert"),
+        Difficulty::Easy => crate::res::str::easy(),
+        Difficulty::Medium => crate::res::str::medium(),
+        Difficulty::Hard => crate::res::str::hard(),
+        Difficulty::Expert => crate::res::str::expert(),
     }
 }
 
 /// The picker's one-line description of each difficulty.
 fn difficulty_detail(d: Difficulty) -> day_fluent::LocalizedText {
     match d {
-        Difficulty::Easy => tr("su_detail_easy"),
-        Difficulty::Medium => tr("su_detail_medium"),
-        Difficulty::Hard => tr("su_detail_hard"),
-        Difficulty::Expert => tr("su_detail_expert"),
+        Difficulty::Easy => crate::res::str::detail_easy(),
+        Difficulty::Medium => crate::res::str::detail_medium(),
+        Difficulty::Hard => crate::res::str::detail_hard(),
+        Difficulty::Expert => crate::res::str::detail_expert(),
     }
 }
 
@@ -686,7 +687,7 @@ pub fn sudoku_page() -> AnyPiece {
     .grow();
 
     let pu = ui.clone();
-    let header = chrome::game_header(tr("nav_sudoku"), "su-pause", move || {
+    let header = chrome::game_header(crate::res::str::game_title(), "su-pause", move || {
         if pu.overlay.get_untracked() == Overlay::None {
             pu.show(Overlay::Pause);
             pu.cue(&cues::SELECT);
@@ -740,7 +741,7 @@ fn status_bar(ui: Rc<Ui>) -> impl Piece {
     }
     let (u1, u2, u3, u4) = (ui.clone(), ui.clone(), ui.clone(), ui);
     let difficulty = pill(
-        tr("su_difficulty"),
+        crate::res::str::difficulty(),
         move || {
             u1.board.track();
             difficulty_label(u1.game.borrow().difficulty).format()
@@ -752,13 +753,13 @@ fn status_bar(ui: Rc<Ui>) -> impl Piece {
         "su-difficulty",
     );
     let time = pill(
-        tr("su_time"),
+        crate::res::str::time(),
         move || {
             u3.board.track();
             u3.clock.track();
             let g = u3.game.borrow();
             if g.given_up {
-                tr("gk_game_over").format()
+                gamekit::res::str::game_over().format()
             } else {
                 fmt_time(g.elapsed as u64)
             }
@@ -819,7 +820,7 @@ fn board_grid(ui: Rc<Ui>) -> impl Piece {
                     let c = Point::new(sz.width / 2.0, sz.height / 2.0 - 24.0);
                     draw_glyph(d, Glyph::Pause, c, 54.0, Color::rgba(1.0, 1.0, 1.0, 0.75));
                     d.text(
-                        &tr("gk_paused").format(),
+                        &gamekit::res::str::paused().format(),
                         Point::new(sz.width / 2.0, sz.height / 2.0 + 34.0),
                         TextStyle {
                             size: 22.0,
@@ -872,14 +873,7 @@ fn cell_piece(ui: Rc<Ui>, r: usize, c: usize) -> AnyPiece {
         tap_ui.cue(&cues::TICK);
     })
     .on_key(move |k| key_ui.key(k))
-    .a11y(move |a| {
-        a.label(
-            tr("su_cell_a11y")
-                .arg("row", (r + 1) as f64)
-                .arg("col", (c + 1) as f64)
-                .format(),
-        )
-    })
+    .a11y(move |a| a.label(crate::res::str::cell_a11y((c + 1) as f64, (r + 1) as f64).format()))
     .id(format!("su-cell-{i}"))
     .frame(CELL, CELL)
     .any()
@@ -894,9 +888,9 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
             Glyph::Pencil,
             move || {
                 if u1.game.borrow().notes_mode {
-                    tr("su_notes_on").format()
+                    crate::res::str::notes_on().format()
                 } else {
-                    tr("su_notes").format()
+                    crate::res::str::notes().format()
                 }
             },
             move || u2.game.borrow().notes_mode,
@@ -920,11 +914,11 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
             move || {
                 let g = u1.game.borrow();
                 if g.difficulty.unlimited_hints() {
-                    tr("su_hint_unlimited").format()
+                    crate::res::str::hint_unlimited().format()
                 } else if !g.difficulty.hints_enabled() {
-                    tr("su_hint").format()
+                    crate::res::str::hint().format()
                 } else {
-                    tr("su_hint_n").arg("n", g.hints_remaining as f64).format()
+                    crate::res::str::hint_n(g.hints_remaining as f64).format()
                 }
             },
             || false,
@@ -950,7 +944,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
                 let (u1, u2, u3, u4) = (su.clone(), su.clone(), su.clone(), su.clone());
                 split_button(
                     Glyph::Undo,
-                    tr("su_undo"),
+                    crate::res::str::undo(),
                     move || !u1.game.borrow().can_undo(),
                     move || {
                         u2.edit(|g| g.undo());
@@ -958,7 +952,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
                     },
                     "su-undo",
                     Glyph::Redo,
-                    tr("su_redo"),
+                    crate::res::str::redo(),
                     move || !u3.game.borrow().can_redo(),
                     move || {
                         u4.edit(|g| g.redo());
@@ -973,7 +967,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
             let (u1, u2) = (au.clone(), au.clone());
             action_button(
                 Glyph::Undo,
-                || tr("su_undo").format(),
+                || crate::res::str::undo().format(),
                 || false,
                 move || !u1.game.borrow().can_undo(),
                 move || {
@@ -996,7 +990,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
                 let (u1, u2, u3, u4) = (su.clone(), su.clone(), su.clone(), su.clone());
                 split_button(
                     Glyph::Check,
-                    tr("su_commit"),
+                    crate::res::str::commit(),
                     move || u1.game.borrow().busy(),
                     move || {
                         u2.edit(|g| g.commit_checkpoint());
@@ -1004,7 +998,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
                     },
                     "su-commit",
                     Glyph::Cross,
-                    tr("su_revert"),
+                    crate::res::str::revert(),
                     move || u3.game.borrow().busy(),
                     move || {
                         u4.edit(|g| g.revert_checkpoint());
@@ -1019,7 +1013,7 @@ fn control_pad(ui: Rc<Ui>) -> impl Piece {
             let (u1, u2) = (au.clone(), au.clone());
             action_button(
                 Glyph::Flag,
-                || tr("su_checkpoint").format(),
+                || crate::res::str::checkpoint().format(),
                 || false,
                 move || u1.game.borrow().busy(),
                 move || {
@@ -1126,7 +1120,7 @@ fn number_key(ui: Rc<Ui>, digit: u8) -> AnyPiece {
     .on_tap(move || tu.enter(digit))
     .on_key(move |k| ku.key(k))
     .a11y(move |a| {
-        a.label(tr("su_key_a11y").arg("n", digit as f64).format())
+        a.label(crate::res::str::key_a11y(digit as f64).format())
             .role(Role::Button)
     })
     .id(format!("su-key-{digit}"))
@@ -1343,7 +1337,7 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
             move || live,
             move || {
                 let u = u.clone();
-                menu_button(tr("gk_resume"), GREEN, "su-resume", move || {
+                menu_button(gamekit::res::str::resume(), GREEN, "su-resume", move || {
                     u.show(Overlay::None);
                 })
             },
@@ -1355,13 +1349,13 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
             move || live,
             move || {
                 let u = u.clone();
-                menu_button(tr("su_give_up"), AMBER, "su-give-up", move || {
+                menu_button(crate::res::str::give_up(), AMBER, "su-give-up", move || {
                     let u = u.clone();
                     day_core::task(async move {
-                        let sure = Alert::new(tr("su_give_up_title"))
-                            .message(tr("su_give_up_message"))
-                            .destructive(tr("su_give_up_confirm"), true)
-                            .cancel(tr("gk_cancel"))
+                        let sure = Alert::new(crate::res::str::give_up_title())
+                            .message(crate::res::str::give_up_message())
+                            .destructive(crate::res::str::give_up_confirm(), true)
+                            .cancel(gamekit::res::str::cancel())
                             .present()
                             .await;
                         if sure == Some(true) {
@@ -1377,25 +1371,31 @@ fn pause_menu(ui: Rc<Ui>) -> AnyPiece {
     let (u1, u2, u3) = (ui.clone(), ui.clone(), ui.clone());
     card_frame(
         column((
-            label(tr("gk_paused"))
+            label(gamekit::res::str::paused())
                 .font(Font::LargeTitle)
                 .weight(FontWeight::Black)
                 .color(Color::WHITE),
             resume,
-            menu_button(tr("gk_new_game"), KEY_BLUE, "su-new-game", move || {
-                u1.push(Overlay::Difficulty)
-            }),
-            menu_button(tr("gk_settings"), SLATE, "su-settings", move || {
-                u2.push(Overlay::Settings)
-            }),
             menu_button(
-                tr("gk_instructions"),
+                gamekit::res::str::new_game(),
+                KEY_BLUE,
+                "su-new-game",
+                move || u1.push(Overlay::Difficulty),
+            ),
+            menu_button(
+                gamekit::res::str::settings(),
+                SLATE,
+                "su-settings",
+                move || u2.push(Overlay::Settings),
+            ),
+            menu_button(
+                gamekit::res::str::instructions(),
                 INDIGO,
                 "su-instructions",
                 move || u3.push(Overlay::Instructions),
             ),
             give_up,
-            menu_button(tr("gk_quit"), RED, "su-quit", || {
+            menu_button(gamekit::res::str::quit(), RED, "su-quit", || {
                 nav_back();
             }),
         ))
@@ -1416,13 +1416,13 @@ fn solved_card(ui: Rc<Ui>) -> AnyPiece {
         )
     };
     let record = if new_best {
-        label(tr("su_new_best"))
+        label(crate::res::str::new_best())
             .font(Font::Title3)
             .bold()
             .color(GOLD)
             .any()
     } else if best > 0 {
-        label(tr("su_best").arg("time", fmt_time(best)))
+        label(crate::res::str::best(fmt_time(best)))
             .font(Font::Subheadline)
             .color(TEXT_DIM)
             .any()
@@ -1432,14 +1432,16 @@ fn solved_card(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     card_frame(
         column((
-            label(tr("su_stars")).font(Font::Title),
-            label(tr("su_solved_title"))
+            label(crate::res::str::stars()).font(Font::Title),
+            label(crate::res::str::solved_title())
                 .font(Font::LargeTitle)
                 .weight(FontWeight::Black)
                 .color(GOLD)
                 .align(TextAlign::Center),
             column((
-                label(tr("su_time")).font(Font::Caption).color(TEXT_DIM),
+                label(crate::res::str::time())
+                    .font(Font::Caption)
+                    .color(TEXT_DIM),
                 label(fmt_time(elapsed))
                     .font(Font::Title3)
                     .bold()
@@ -1450,10 +1452,13 @@ fn solved_card(ui: Rc<Ui>) -> AnyPiece {
             .spacing(2.0)
             .align(HAlign::Center),
             record,
-            menu_button(tr("gk_play_again"), KEY_BLUE, "su-play-again", move || {
-                u.push(Overlay::Difficulty)
-            }),
-            menu_button(tr("gk_quit"), RED, "su-quit", || {
+            menu_button(
+                gamekit::res::str::play_again(),
+                KEY_BLUE,
+                "su-play-again",
+                move || u.push(Overlay::Difficulty),
+            ),
+            menu_button(gamekit::res::str::quit(), RED, "su-quit", || {
                 nav_back();
             }),
         ))
@@ -1515,12 +1520,12 @@ fn difficulty_picker(ui: Rc<Ui>) -> AnyPiece {
     let u = ui;
     card_frame(
         column((
-            label(tr("su_choose_difficulty"))
+            label(crate::res::str::choose_difficulty())
                 .font(Font::Title2)
                 .bold()
                 .color(Color::WHITE),
             column(PieceVec(cards)).spacing(12.0),
-            button(tr("gk_cancel"))
+            button(gamekit::res::str::cancel())
                 .action(move || u.pop())
                 .id("su-cancel"),
         ))
@@ -1566,7 +1571,7 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     let solved = {
         let u = ui.clone();
         setting_row(
-            tr("su_puzzles_solved"),
+            crate::res::str::puzzles_solved(),
             label(move || {
                 u.board.track();
                 u.game.borrow().records.solved.to_string()
@@ -1579,15 +1584,15 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     };
     let reset = {
         let u = ui.clone();
-        button(tr("su_reset_records"))
+        button(crate::res::str::reset_records())
             .tint(RED)
             .action(move || {
                 let u = u.clone();
                 day_core::task(async move {
-                    let sure = Alert::new(tr("su_reset_title"))
-                        .message(tr("su_reset_message"))
-                        .destructive(tr("gk_reset_confirm"), true)
-                        .cancel(tr("gk_cancel"))
+                    let sure = Alert::new(crate::res::str::reset_title())
+                        .message(crate::res::str::reset_message())
+                        .destructive(gamekit::res::str::reset_confirm(), true)
+                        .cancel(gamekit::res::str::cancel())
                         .present()
                         .await;
                     if sure == Some(true) {
@@ -1607,29 +1612,32 @@ fn settings_card(ui: Rc<Ui>) -> AnyPiece {
     card_frame(
         scroll(
             column((
-                label(tr("gk_settings"))
+                label(gamekit::res::str::settings())
                     .font(Font::Title2)
                     .bold()
                     .color(Color::WHITE),
-                heading(tr("nav_sudoku")),
-                setting_row(tr("gk_sounds"), toggle(ui.sounds).id("su-sounds").any()),
+                heading(crate::res::str::game_title()),
                 setting_row(
-                    tr("gk_vibrations"),
+                    gamekit::res::str::sounds(),
+                    toggle(ui.sounds).id("su-sounds").any(),
+                ),
+                setting_row(
+                    gamekit::res::str::vibrations(),
                     toggle(ui.vibrations).id("su-vibrations").any(),
                 ),
                 setting_row(
-                    tr("su_default_difficulty"),
+                    crate::res::str::default_difficulty(),
                     picker(difficulty_names, ui.default_difficulty)
                         .menu()
                         .id("su-default-difficulty")
                         .any(),
                 ),
-                heading(tr("su_records")),
+                heading(crate::res::str::records()),
                 column(PieceVec(record_rows)).spacing(8.0),
                 solved,
-                heading(tr("gk_data")),
+                heading(gamekit::res::str::data()),
                 reset,
-                button(tr("gk_done"))
+                button(gamekit::res::chrome::str::done())
                     .prominent()
                     .action(move || done.pop())
                     .id("su-done"),
@@ -1660,41 +1668,41 @@ fn instructions_card(ui: Rc<Ui>) -> AnyPiece {
     };
     let done = ui;
     let body = column((
-        para(tr("su_help_intro")),
-        heading(tr("su_help_play")),
-        para(tr("su_help_play_1")),
-        para(tr("su_help_play_2")),
-        para(tr("su_help_play_3")),
-        para(tr("su_help_play_4")),
-        para(tr("su_help_play_5")),
-        heading(tr("su_help_checkpoint")),
-        para(tr("su_help_checkpoint_1")),
-        para(tr("su_help_checkpoint_2")),
+        para(crate::res::str::help_intro()),
+        heading(crate::res::str::help_play()),
+        para(crate::res::str::help_play_1()),
+        para(crate::res::str::help_play_2()),
+        para(crate::res::str::help_play_3()),
+        para(crate::res::str::help_play_4()),
+        para(crate::res::str::help_play_5()),
+        heading(crate::res::str::help_checkpoint()),
+        para(crate::res::str::help_checkpoint_1()),
+        para(crate::res::str::help_checkpoint_2()),
     ))
     .spacing(10.0)
     .align(HAlign::Leading);
     let tail = column((
-        heading(tr("su_help_undo")),
-        para(tr("su_help_undo_1")),
-        para(tr("su_help_undo_2")),
-        heading(tr("su_help_win")),
-        para(tr("su_help_win_1")),
-        para(tr("su_help_win_2")),
-        para(tr("su_help_win_3")),
-        para(tr("su_help_win_4")),
+        heading(crate::res::str::help_undo()),
+        para(crate::res::str::help_undo_1()),
+        para(crate::res::str::help_undo_2()),
+        heading(crate::res::str::help_win()),
+        para(crate::res::str::help_win_1()),
+        para(crate::res::str::help_win_2()),
+        para(crate::res::str::help_win_3()),
+        para(crate::res::str::help_win_4()),
     ))
     .spacing(10.0)
     .align(HAlign::Leading);
     card_frame(
         scroll(
             column((
-                label(tr("nav_sudoku"))
+                label(crate::res::str::game_title())
                     .font(Font::Title2)
                     .bold()
                     .color(Color::WHITE),
                 body,
                 tail,
-                button(tr("gk_done"))
+                button(gamekit::res::chrome::str::done())
                     .prominent()
                     .action(move || done.pop())
                     .id("su-help-done"),
