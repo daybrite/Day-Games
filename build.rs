@@ -7,7 +7,7 @@
 //! removing a file under `resource/` regenerates on the next build.
 //! The app title is embedded from Day's resolved metadata for the home and window headings.
 fn main() {
-    day_build::generate_resources().expect("day-build: resource codegen");
+    day_build::prebuild_project().expect("day-build: prebuild");
     let title = day_build::app_title().expect("day-build: app title");
     let out = std::path::PathBuf::from(std::env::var_os("OUT_DIR").expect("OUT_DIR"));
     std::fs::write(
